@@ -1,20 +1,14 @@
-from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 from curl_cffi import requests
 import logging
 
-# Configure production logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("nexus-engine")
 
-app = FastAPI(
-    title="Nexus Anti-Bot Scraper API",
-    description="High-IQ Agentic Bypass Engine Powered by Stealth TLS Impersonation",
-    version="1.0.0"
-)
+app = FastAPI(title="Nexus Anti-Bot Scraper API", version="2.0.0")
 
-# Enable CORS so developers can call your API directly from frontends or AI frameworks
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -23,68 +17,57 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Active API Key Database (Add customer keys here or connect to a database later)
 VALID_API_KEYS = {
     "sk_live_nexus_2026": {"tier": "Pro", "status": "active"},
     "sk_test_demo_key": {"tier": "Free", "status": "active"}
 }
 
-# Request Body Schema
 class ScrapeRequest(BaseModel):
     url: str
-    impersonate: str = "chrome124"  # Default browser signature
+    impersonate: str = "chrome124"
     timeout: int = 15
+
+# Real Chrome Browser Headers to trick Cloudflare WAF
+ADVANCED_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Accept-Encoding": "gzip, deflate, br, zstd",
+    "Sec-Ch-Ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+    "Sec-Ch-Ua-Mobile": "?0",
+    "Sec-Ch-Ua-Platform": '"Windows"',
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "none",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1"
+}
 
 @app.get("/")
 def health_check():
-    """Root endpoint for Render health checks and uptime monitoring."""
-    return {
-        "status": "online",
-        "engine": "Nexus Stealth Proxy Core",
-        "version": "1.0.0",
-        "authorization": "Active"
-    }
+    return {"status": "online", "engine": "Nexus Stealth Proxy Core v2.0"}
 
 @app.post("/v1/scrape")
 async def execute_bypass(
     payload: ScrapeRequest,
     x_api_key: str = Header(None, alias="x-api-key")
 ):
-    """
-    Main anti-bot extraction endpoint.
-    Bypasses Cloudflare, DataDome, and TLS/JA3 fingerprint checks.
-    """
-    # 1. Authentication Layer
     if not x_api_key or x_api_key not in VALID_API_KEYS:
-        raise HTTPException(
-            status_code=401, 
-            detail="Invalid or missing 'x-api-key' header."
-        )
-
-    key_info = VALID_API_KEYS[x_api_key]
-    if key_info["status"] != "active":
-        raise HTTPException(status_code=403, detail="API Key is suspended or inactive.")
+        raise HTTPException(status_code=401, detail="Invalid API Key")
 
     target_url = payload.url.strip()
     if not target_url.startswith(("http://", "https://")):
-        raise HTTPException(
-            status_code=400, 
-            detail="Invalid URL format. Must start with http:// or https://"
-        )
+        raise HTTPException(status_code=400, detail="Invalid URL format")
 
-    logger.info(f"Executing stealth request to target: {target_url}")
+    logger.info(f"Stealth request to: {target_url}")
 
-    # 2. Execution Layer (C-Level TLS Impersonation)
     try:
         response = requests.get(
             target_url,
             impersonate=payload.impersonate,
             timeout=payload.timeout,
-            headers={
-                "Accept-Language": "en-US,en;q=0.9",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-                "Upgrade-Insecure-Requests": "1"
-            }
+            headers=ADVANCED_HEADERS,
+            allow_redirects=True
         )
 
         return {
@@ -92,18 +75,9 @@ async def execute_bypass(
             "http_code": response.status_code,
             "target_url": target_url,
             "content_length": len(response.text),
-            "data": response.text
+            "data": response.text[:10000]
         }
 
-    except requests.errors.RequestsError as req_err:
-        logger.error(f"Target connection failed: {str(req_err)}")
-        raise HTTPException(
-            status_code=502, 
-            detail=f"Target server connection error: {str(req_err)}"
-        )
     except Exception as err:
-        logger.error(f"Unexpected bypass failure: {str(err)}")
-        raise HTTPException(
-            status_code=500, 
-            detail=f"Internal Engine Error: {str(err)}"
-        )
+        logger.error(f"Bypass error: {str(err)}")
+        raise HTTPException(status_code=500, detail=str(err))
