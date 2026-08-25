@@ -2,6 +2,7 @@ fastapi
 uvicorn
 curl_cffi
 pydantic
+beautifulsoup4
+html2text
 supabase
 slowapi
-html2text
