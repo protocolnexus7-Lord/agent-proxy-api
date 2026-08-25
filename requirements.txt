@@ -4,3 +4,4 @@ curl_cffi
 pydantic
 supabase
 slowapi
+html2text
