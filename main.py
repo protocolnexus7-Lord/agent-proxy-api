@@ -145,35 +145,11 @@ def extract_structured_json(html_content: str, target_schema: dict) -> dict:
         if "price" in key.lower() or "cost" in key.lower():
             matches = re.findall(r'[\$₹€]\s*\d+(?:\.\d{1,2})?|\d+\s*(?:USD|INR|EUR)', text_content)
             extracted_data[key] = matches[:10] if matches else None
-            
-        elif "email" in key.lower() or "contact" in key.lower():
-            
-    for element in soup(["script", "style", "nav", "footer", "header"]):
-        element.decompose()
-
-    text_content = soup.get_text(separator=' ')
-    
-    for key, description in target_schema.items():
-        if "price" in key.lower() or "cost" in key.lower():
-            matches = re.findall(r'[\$₹€]\s*\d+(?:\.\d{1,2})?|\d+\s*(?:USD|INR|EUR)', text_content)
-            extracted_data[key] = matches[:10] if matches else None
-            
         elif "email" in key.lower() or "contact" in key.lower():
             matches = re.findall(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', text_content)
-            extracted_data[key] = list(set(matches)) if matches else None
-            
-        elif "title" in key.lower() or "heading" in key.lower():
-            headings = [h.get_text(strip=True) for h in soup.find_all(['h1', 'h2', 'h3'])]
-            extracted_data[key] = headings[:5] if headings else None
-            
-        elif "link" in key.lower() or "url" in key.lower():
-            links = [a['href'] for a in soup.find_all('a', href=True) if a['href'].startswith('http')]
-            extracted_data[key] = list(set(links))[:10] if links else None
-            
+            extracted_data[key] = matches[:10] if matches else None
         else:
-            pattern = re.compile(rf'{key}\s*[:\-]\s*([^\n]+)', re.IGNORECASE)
-            match = pattern.search(text_content)
-            extracted_data[key] = match.group(1).strip() if match else "Data point mapped."
+            extracted_data[key] = text_content[:200]
 
     return extracted_data
 
