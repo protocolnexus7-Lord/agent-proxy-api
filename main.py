@@ -1,71 +1,92 @@
+import os
 import logging
 import random
 from typing import Optional
 from urllib.parse import urlparse
-from fastapi import FastAPI, HTTPException, Header, Depends
+from fastapi import FastAPI, HTTPException, Header, Depends, Request
 from pydantic import BaseModel, HttpUrl
 from curl_cffi.requests import AsyncSession
 
-# Initialize System Logging
+# Rate Limiting & Database Imports
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from supabase import create_client, Client
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("nexus_godmode")
 
+# Initialize SlowAPI Limiter
+limiter = Limiter(key_func=get_remote_address)
+
 app = FastAPI(
     title="Nexus Anti-Bot Commercial Gateway",
-    version="6.1.1-Enterprise",
-    description="Protocol-Accurate TLS/HTTP2 Scraping Gateway with Automatic Proxy Failover"
+    version="6.2.0-Production",
+    description="Multi-Tenant Database-Backed Anti-Bot Engine"
 )
 
-# API Authentication Credential
-API_KEY_CREDENTIAL = "sk_live_nexus_2026"
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-async def verify_api_key(x_api_key: str = Header(...)):
-    if x_api_key != API_KEY_CREDENTIAL:
-        raise HTTPException(status_code=401, detail="Invalid API Key")
-    return x_api_key
+# Initialize Supabase Client
+# (Set these in Render Environment Variables or replace with your Supabase credentials)
+SUPABASE_URL = os.getenv("SUPABASE_URL", "https://your-project.supabase.co")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY", "your-supabase-anon-key")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+
+async def verify_and_deduct_credits(request: Request, x_api_key: str = Header(...)) -> dict:
+    """Verifies API key against Supabase DB and checks credit balance."""
+    try:
+        # Fetch key details from Supabase
+        res = supabase.table("api_keys").select("*").eq("api_key", x_api_key).eq("status", "active").execute()
+        
+        if not res.data or len(res.data) == 0:
+            raise HTTPException(status_code=401, detail="Invalid or Revoked API Key")
+        
+        user_record = res.data[0]
+        
+        if user_record["credits_remaining"] <= 0:
+            raise HTTPException(status_code=402, detail="Payment Required: Out of Scrape Credits")
+            
+        return user_record
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Database Auth Failure: {e}")
+        raise HTTPException(status_code=500, detail="Authentication Service Unavailable")
+
 
 async def fetch_free_proxy_pool(limit: int = 15) -> list[str]:
-    """Dynamically aggregates fresh HTTP/HTTPS proxies across multiple public networks."""
+    """Dynamically aggregates fresh HTTP/HTTPS proxies across public networks."""
     candidates = []
-    
-    # Provider 1: ProxyScrape API Endpoint
     proxyscrape_url = "https://api.proxyscrape.com/v4/free-proxy-list/get?request=display_proxies&proxy_format=protocolipport&format=text"
-    
-    # Provider 2: Proxifly Public Feed
     proxifly_url = "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/http/data.json"
 
     async with AsyncSession() as session:
-        # Fetch Source 1 (ProxyScrape)
         try:
             res1 = await session.get(proxyscrape_url, timeout=4)
             if res1.status_code == 200 and res1.text:
-                lines = res1.text.strip().splitlines()
-                for line in lines[:15]:
+                for line in res1.text.strip().splitlines()[:15]:
                     if ":" in line and not line.startswith("#"):
-                        # Normalize format
                         formatted = line.strip() if line.startswith("http") else f"http://{line.strip()}"
                         candidates.append(formatted)
         except Exception as e:
             logger.warning(f"ProxyScrape Provider Unreachable: {e}")
 
-        # Fetch Source 2 (Proxifly)
         try:
             res2 = await session.get(proxifly_url, timeout=4)
-            if res2.status_code == 200:
-                proxies = res2.json()
-                if proxies and isinstance(proxies, list):
-                    sampled = random.sample(proxies, min(len(proxies), 10))
-                    for item in sampled:
-                        candidates.append(f"http://{item['ip']}:{item['port']}")
+            if res2.status_code == 200 and res2.json():
+                sampled = random.sample(res2.json(), min(len(res2.json()), 10))
+                for item in sampled:
+                    candidates.append(f"http://{item['ip']}:{item['port']}")
         except Exception as e:
             logger.warning(f"Proxifly Provider Unreachable: {e}")
 
-    # Remove duplicates while maintaining order
     unique_candidates = list(dict.fromkeys(candidates))
-    if not unique_candidates:
-        return []
-    
-    return random.sample(unique_candidates, min(len(unique_candidates), limit))
+    return random.sample(unique_candidates, min(len(unique_candidates), limit)) if unique_candidates else []
+
 
 class ScrapePayload(BaseModel):
     url: HttpUrl
@@ -74,24 +95,26 @@ class ScrapePayload(BaseModel):
     custom_proxy: Optional[str] = None
     timeout: Optional[int] = 15
 
+
 @app.get("/")
 async def root():
     return {
         "status": "online",
-        "engine": "Nexus God-Engine v6.1.1 Enterprise",
+        "engine": "Nexus God-Engine v6.2.0 Monetized",
         "docs": "/docs"
     }
 
+
 @app.post("/v1/scrape")
+@limiter.limit("60/minute")
 async def scrape_target(
+    request: Request,
     payload: ScrapePayload, 
-    api_key: str = Depends(verify_api_key)
+    user: dict = Depends(verify_and_deduct_credits)
 ):
     target_url = str(payload.url)
-    parsed_url = urlparse(target_url)
-    domain = parsed_url.netloc
+    domain = urlparse(target_url).netloc
 
-    # Dynamic Stealther Headers (Chrome 120+ Parity)
     stealth_headers = {
         "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
         "accept-language": "en-US,en;q=0.9",
@@ -104,24 +127,19 @@ async def scrape_target(
         "upgrade-insecure-requests": "1"
     }
 
-    # Build Candidate Proxy Switchboard
     proxy_candidates = []
     if payload.custom_proxy:
         proxy_candidates.append(payload.custom_proxy)
     elif payload.auto_rotate_proxy:
         proxy_candidates = await fetch_free_proxy_pool(limit=10)
 
-    # Always inject direct datacenter connection as ultimate fallback route
-    proxy_candidates.append(None)
+    proxy_candidates.append(None)  # Direct connection backup
 
-    # Execution Engine Loop with Failover Guarantee
     last_error = None
     for current_proxy in proxy_candidates:
         proxies = {"http": current_proxy, "https": current_proxy} if current_proxy else None
         
         try:
-            logger.info(f"Triggering Socket -> Target: {domain} | Proxy: {current_proxy if current_proxy else 'Direct Datacenter'}")
-            
             async with AsyncSession(
                 impersonate=payload.impersonate,
                 headers=stealth_headers,
@@ -134,25 +152,29 @@ async def scrape_target(
                     allow_redirects=True
                 )
 
-                # Execution Success Response Payload
+                # Deduct Credits (1 credit for direct, 5 credits for auto proxy)
+                cost = 5 if payload.auto_rotate_proxy else 1
+                new_balance = user["credits_remaining"] - cost
+                supabase.table("api_keys").update({"credits_remaining": new_balance}).eq("id", user["id"]).execute()
+
                 return {
                     "status": "success",
                     "engine_mode": "godmode_async_tls",
                     "http_code": response.status_code,
                     "target_url": target_url,
                     "proxy_used": current_proxy if current_proxy else "direct_datacenter",
+                    "credits_remaining": new_balance,
                     "cookies_captured": dict(response.cookies),
                     "content_length": len(response.text),
                     "data": response.text[:10000]
                 }
 
         except Exception as err:
-            logger.warning(f"Proxy route failed [{current_proxy}]: {str(err)}. Failing over...")
+            logger.warning(f"Proxy route failed [{current_proxy}]: {str(err)}")
             last_error = err
             continue
 
-    # Absolute Failure Handler (Triggers only if all proxies AND direct fallback fail)
     raise HTTPException(
         status_code=500, 
-        detail=f"Scrape Execution Failed across all fallback routes: {str(last_error)}"
+        detail=f"Scrape Execution Failed: {str(last_error)}"
     )
