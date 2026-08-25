@@ -1,30 +1,47 @@
 import logging
+import random
 from typing import Optional
 from urllib.parse import urlparse
 from fastapi import FastAPI, HTTPException, Header, Depends
 from pydantic import BaseModel, HttpUrl
 from curl_cffi.requests import AsyncSession
 
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("nexus_godmode")
 
 app = FastAPI(
     title="Nexus Anti-Bot Commercial Gateway",
     version="6.1.0",
-    description="Enterprise Protocol-Accurate TLS/HTTP2 Scraping Engine"
+    description="Enterprise Protocol-Accurate TLS/HTTP2 Scraping Engine with Free Dynamic Proxy Support"
 )
 
+# API Security Key
 API_KEY_CREDENTIAL = "sk_live_nexus_2026"
-DEFAULT_RESIDENTIAL_PROXY = None 
 
 async def verify_api_key(x_api_key: str = Header(...)):
     if x_api_key != API_KEY_CREDENTIAL:
         raise HTTPException(status_code=401, detail="Invalid API Key")
     return x_api_key
 
+async def fetch_free_proxifly_proxy() -> str | None:
+    """Fetches a dynamic live proxy from Proxifly's public feed (Zero API Key required)."""
+    cdn_url = "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/http/data.json"
+    try:
+        async with AsyncSession() as session:
+            response = await session.get(cdn_url, timeout=5)
+            if response.status_code == 200:
+                proxies = response.json()
+                if proxies and isinstance(proxies, list):
+                    chosen = random.choice(proxies)
+                    return f"http://{chosen['ip']}:{chosen['port']}"
+    except Exception as err:
+        logger.error(f"Free proxy fetch error: {str(err)}")
+    return None
+
 class ScrapePayload(BaseModel):
     url: HttpUrl
-    impersonate: Optional[str] = "chrome"  # Defaults to latest installed Chrome profile
+    impersonate: Optional[str] = "chrome"
     auto_rotate_proxy: Optional[bool] = False
     custom_proxy: Optional[str] = None
     timeout: Optional[int] = 20
@@ -59,12 +76,14 @@ async def scrape_target(
         "upgrade-insecure-requests": "1"
     }
 
-    # Proxy Switching Board
+    # Proxy Selection Switchboard
     selected_proxy = None
     if payload.custom_proxy:
+        # Priority 1: User passed their own proxy
         selected_proxy = payload.custom_proxy
     elif payload.auto_rotate_proxy:
-        selected_proxy = DEFAULT_RESIDENTIAL_PROXY
+        # Priority 2: Fetch a free dynamic proxy automatically
+        selected_proxy = await fetch_free_proxifly_proxy()
 
     proxies = {"http": selected_proxy, "https": selected_proxy} if selected_proxy else None
 
@@ -76,7 +95,7 @@ async def scrape_target(
         verify=True
     ) as session:
         try:
-            logger.info(f"Scrape Triggered -> Target: {domain} | Proxy: {selected_proxy}")
+            logger.info(f"Scrape Triggered -> Domain: {domain} | Proxy: {selected_proxy}")
             
             response = await session.get(
                 target_url,
