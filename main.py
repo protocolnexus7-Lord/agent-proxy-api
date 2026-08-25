@@ -1,3 +1,27 @@
+import html2text
+import re
+
+def convert_html_to_ai_markdown(html_content: str) -> dict:
+    # 1. Configure Markdown converter
+    h = html2text.HTML2Text()
+    h.ignore_links = False
+    h.ignore_images = True
+    h.ignore_tables = False
+    h.body_width = 0  # Prevents ugly line breaks
+    
+    # 2. Extract title and convert body
+    markdown_text = h.handle(html_content)
+    
+    # 3. Clean up extra whitespace and empty lines
+    cleaned_markdown = re.sub(r'\n\s*\n', '\n\n', markdown_text).strip()
+    
+    # 4. Estimate Token Count (Roughly 1 token = 4 characters)
+    estimated_tokens = len(cleaned_markdown) // 4
+    
+    return {
+        "markdown": cleaned_markdown,
+        "estimated_tokens": estimated_tokens
+    }
 import os
 import logging
 import random
