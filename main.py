@@ -28,13 +28,52 @@ class ScrapePayload(BaseModel):
 # STEALTH FALLBACK SCAVENGER
 # =====================================================================
 async def execute_stealth_fallback_scrape(url: str) -> dict:
+    """
+    Tier-2 God Mode: Triggered on 403, 429, or Turnstile challenges.
+    Uses headless browser automation with dynamic evasion vectors.
+    """
     try:
-        async with AsyncSession(impersonate="chrome120") as session:
-            res = await session.get(url, timeout=20, allow_redirects=True)
-            return {"success": True, "html": res.text}
+        from playwright.async_api import async_playwright
+        
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(
+                headless=True,
+                args=[
+                    "--disable-blink-features=AutomationControlled",
+                    "--no-sandbox",
+                    "--disable-setuid-sandbox",
+                    "--disable-infobars",
+                    "--window-position=0,0",
+                    "--ignore-certificate-errors",
+                ]
+            )
+            context = await browser.new_context(
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                viewport={"width": 1920, "height": 1080},
+                locale="en-US",
+                timezone_id="America/New_York"
+            )
+            
+            page = await context.new_page()
+            await page.add_init_script("""
+                Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+                window.chrome = { runtime: {} };
+            """)
+            
+            response = await page.goto(url, wait_until="networkidle", timeout=30000)
+            content = await page.content()
+            await browser.close()
+            
+            return {"success": True, "html": content, "status_code": response.status if response else 200}
+            
     except Exception as e:
-        return {"success": False, "error": str(e)}
-
+        try:
+            async with AsyncSession(impersonate="chrome120") as session:
+                res = await session.get(url, timeout=20, allow_redirects=True)
+                return {"success": True, "html": res.text, "status_code": res.status_code}
+        except Exception as fallback_err:
+            return {"success": False, "error": f"Browser Scavenger Failed: {str(e)} | TLS Fallback Failed: {str(fallback_err)}"}
+                
 # =====================================================================
 # ZERO-SHOT EXTRACTION ENGINE
 # =====================================================================
