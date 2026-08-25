@@ -23,8 +23,8 @@ async def verify_api_key(x_api_key: str = Header(...)):
     return x_api_key
 
 async def fetch_free_proxy_pool(limit: int = 10) -> list[str]:
-    """Fetches multiple candidate proxies from public lists."""
-    cdn_url = "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/http/data.json"
+    """Fetches verified HTTPS proxies from Proxifly CDN (Supports SSL target URLs)."""
+    cdn_url = "https://raw.githubusercontent.com/proxifly/free-proxy-list/main/proxies/protocols/https/data.json"
     candidates = []
     try:
         async with AsyncSession() as session:
@@ -32,12 +32,11 @@ async def fetch_free_proxy_pool(limit: int = 10) -> list[str]:
             if response.status_code == 200:
                 proxies = response.json()
                 if proxies and isinstance(proxies, list):
-                    # Pick a sample of up to `limit` proxies to try
                     sampled = random.sample(proxies, min(len(proxies), limit))
                     for item in sampled:
                         candidates.append(f"http://{item['ip']}:{item['port']}")
     except Exception as err:
-        logger.error(f"Free proxy list fetch error: {str(err)}")
+        logger.error(f"Free HTTPS proxy fetch error: {str(err)}")
     return candidates
 
 class ScrapePayload(BaseModel):
@@ -83,7 +82,7 @@ async def scrape_target(
     elif payload.auto_rotate_proxy:
         proxy_candidates = await fetch_free_proxy_pool(limit=5)
 
-    # Always add Direct Connection (None) as the final fallback to guarantee response success
+    # Always add Direct Connection (None) as the final fallback
     proxy_candidates.append(None)
 
     # Execution Loop with Failover Protection
@@ -106,7 +105,6 @@ async def scrape_target(
                     allow_redirects=True
                 )
 
-                # Successfully executed request
                 return {
                     "status": "success",
                     "engine_mode": "godmode_async_tls",
@@ -123,7 +121,6 @@ async def scrape_target(
             last_error = err
             continue
 
-    # If all attempts fail
     raise HTTPException(
         status_code=500, 
         detail=f"Scrape Execution Failed across all routes: {str(last_error)}"
