@@ -178,3 +178,14 @@ async def scrape_target(
         status_code=500, 
         detail=f"Scrape Execution Failed: {str(last_error)}"
     )
+import os
+import random
+
+# --- PROXY POOL CONFIGURATION ---
+proxy_env = os.getenv("PROXY_LIST", "")
+PROXY_POOL = [p.strip() for p in proxy_env.split(",") if p.strip()]
+
+def get_random_proxy():
+    if not PROXY_POOL:
+        return None
+    return random.choice(PROXY_POOL)
