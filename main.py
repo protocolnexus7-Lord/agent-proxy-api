@@ -13,12 +13,38 @@ from curl_cffi.requests import AsyncSession
 
 app = FastAPI(title="Nexus v6.2 Backend")
 
-# Dummy Supabase / Auth Check placeholder
-def verify_api_key(x_api_key: str = Header(...)):
-    if not x_api_key:
-        raise HTTPException(status_code=401, detail="Invalid API Key")
-    return x_api_key
+# PRODUCTION SECURITY BOUNCER
+async def verify_api_key(x_api_key: str = Header(...)):
+    # 1. Reject missing or bad keys immediately
+    if not x_api_key or not x_api_key.startswith("sk_live_"):
+        raise HTTPException(
+            status_code=401, 
+            detail="Unauthorized: Invalid or missing API key format."
+        )
+    
+    # 2. Hardcoded master key check (for QA testing)
+    if x_api_key == "sk_live_nexus_2026":
+        return x_api_key
 
+    # 3. Supabase Database Quota Check
+    try:
+        user = supabase.table("users").select("*").eq("api_key", x_api_key).execute()
+        if not user.data:
+            raise HTTPException(status_code=401, detail="Unauthorized: Invalid API key.")
+        
+        user_data = user.data[0]
+        if user_data.get("usage_count", 0) >= user_data.get("limit", 50000):
+            raise HTTPException(status_code=429, detail="Payment required: Monthly API limit exceeded.")
+        
+        # Increment usage counter
+        supabase.table("users").update({"usage_count": user_data["usage_count"] + 1}).eq("api_key", x_api_key).execute()
+    except Exception:
+        # If Supabase is unconfigured, reject unknown keys safely
+        if x_api_key != "sk_live_nexus_2026":
+            raise HTTPException(status_code=401, detail="Unauthorized API key access.")
+
+    return x_api_key
+    
 class ScrapePayload(BaseModel):
     url: HttpUrl
     timeout: int = 15
