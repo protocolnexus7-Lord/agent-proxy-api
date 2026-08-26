@@ -5,6 +5,7 @@ import asyncio
 import os
 from typing import Optional, Dict, Any
 from bs4 import BeautifulSoup
+from readability import Document
 import html2text
 from fastapi import FastAPI, HTTPException, Header, Depends
 from pydantic import BaseModel, HttpUrl
@@ -79,9 +80,10 @@ async def execute_stealth_fallback_scrape(url: str, max_retries: int = 3) -> dic
 # ZERO-SHOT EXTRACTION ENGINE
 # =====================================================================
 def extract_structured_json(html_content: str, target_schema: dict) -> dict:
-    soup = BeautifulSoup(html_content, 'html.parser')
+    cleaned_html = Document(html_content).summary()
+    soup = BeautifulSoup(cleaned_html, 'html.parser')
     extracted_data = {}
-
+    
     for element in soup(["script", "style", "nav", "footer", "header"]):
         element.decompose()
 
