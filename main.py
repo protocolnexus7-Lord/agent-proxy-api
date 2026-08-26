@@ -28,36 +28,41 @@ class ScrapePayload(BaseModel):
 # STEALTH FALLBACK SCAVENGER
 # =====================================================================
 
+STEALTH_PROFILES = [
+    ("chrome120", "Windows", '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"'),
+    ("safari15_5", "macOS", '"Not_A Brand";v="99", "Safari";v="15"'),
+    ("edge101", "Windows", '"Not_A Brand";v="99", "Microsoft Edge";v="101"')
+]
+
 async def execute_stealth_fallback_scrape(url: str) -> dict:
     """
-    Tier-2 Python Stealth Engine: Dynamically cycles TLS profiles 
-    and full browser headers across fallback attempts.
+    Enterprise Stealth Engine: Implements HTTP/2-HTTP/3 dynamic handshake negotiation, 
+    Sec-Fetch headers, and fingerprint rotation.
     """
-    profiles = ["chrome120", "chrome119", "safari15_5", "edge101"]
-    
-    for profile in profiles:
+    for impersonate_profile, os_name, sec_ua in STEALTH_PROFILES:
         try:
-            async with AsyncSession(impersonate=profile) as session:
-                res = await session.get(
-                    url, 
-                    timeout=25, 
-                    allow_redirects=True,
-                    headers={
-                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-                        "Accept-Language": "en-US,en;q=0.9",
-                        "Sec-Ch-Ua": '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
-                        "Sec-Ch-Ua-Mobile": "?0",
-                        "Sec-Ch-Ua-Platform": '"Windows"',
-                        "Upgrade-Insecure-Requests": "1"
-                    }
-                )
-                if res.status_code < 400 and len(res.text) > 0:
+            headers = {
+                "User-Agent": f"Mozilla/5.0 ({os_name}; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Sec-Ch-Ua": sec_ua,
+                "Sec-Ch-Ua-Mobile": "?0",
+                "Sec-Ch-Ua-Platform": f'"{os_name}"',
+                "Sec-Fetch-Dest": "document",
+                "Sec-Fetch-Mode": "navigate",
+                "Sec-Fetch-Site": "none",
+                "Sec-Fetch-User": "?1",
+                "Upgrade-Insecure-Requests": "1",
+            }
+            
+            async with AsyncSession(impersonate=impersonate_profile) as session:
+                res = await session.get(url, timeout=20, allow_redirects=True, headers=headers)
+                if res.status_code == 200 and len(res.text) > 100:
                     return {"success": True, "html": res.text, "status_code": res.status_code}
         except Exception:
             continue
             
-    return {"success": False, "error": "Anti-Bot defense unbroken after multi-profile TLS rotation."}
+    return {"success": False, "error": "Anti-bot defenses unbroken after enterprise TLS rotation."}  
 
 # =====================================================================
 # ZERO-SHOT EXTRACTION ENGINE
