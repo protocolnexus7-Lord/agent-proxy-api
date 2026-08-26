@@ -30,8 +30,8 @@ class ScrapePayload(BaseModel):
 
 async def execute_stealth_fallback_scrape(url: str) -> dict:
     """
-    Tier-2 Python Stealth Engine: Uses dynamic TLS fingerprint cycling 
-    and Chrome/Safari impersonation layers without external OS dependencies.
+    Tier-2 Python Stealth Engine: Dynamically cycles TLS profiles 
+    and full browser headers across fallback attempts.
     """
     profiles = ["chrome120", "chrome119", "safari15_5", "edge101"]
     
@@ -43,6 +43,8 @@ async def execute_stealth_fallback_scrape(url: str) -> dict:
                     timeout=25, 
                     allow_redirects=True,
                     headers={
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+                        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
                         "Accept-Language": "en-US,en;q=0.9",
                         "Sec-Ch-Ua": '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
                         "Sec-Ch-Ua-Mobile": "?0",
@@ -50,7 +52,7 @@ async def execute_stealth_fallback_scrape(url: str) -> dict:
                         "Upgrade-Insecure-Requests": "1"
                     }
                 )
-                if res.status_code < 400:
+                if res.status_code < 400 and len(res.text) > 0:
                     return {"success": True, "html": res.text, "status_code": res.status_code}
         except Exception:
             continue
