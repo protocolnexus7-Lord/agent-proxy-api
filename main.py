@@ -1,6 +1,8 @@
 import re
 import json
 import random
+import asyncio
+import os
 from typing import Optional, Dict, Any
 from bs4 import BeautifulSoup
 import html2text
@@ -24,9 +26,9 @@ class ScrapePayload(BaseModel):
     schema: Optional[Dict[str, Any]] = None
     impersonate: str = "chrome110"
 
-# =====================================================================
-# STEALTH FALLBACK SCAVENGER
-# =====================================================================
+# ==============================================================================
+# STEALTH FALLBACK SCAVENGER (ENTERPRISE $1M EDITION)
+# ==============================================================================
 
 STEALTH_PROFILES = [
     ("chrome120", "Windows", '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"'),
@@ -34,35 +36,44 @@ STEALTH_PROFILES = [
     ("edge101", "Windows", '"Not_A Brand";v="99", "Microsoft Edge";v="101"')
 ]
 
-async def execute_stealth_fallback_scrape(url: str) -> dict:
+ROTATING_PROXY = os.getenv("RESIDENTIAL_PROXY_URL", None)
+
+async def execute_stealth_fallback_scrape(url: str, max_retries: int = 3) -> dict:
     """
-    Enterprise Stealth Engine: Implements HTTP/2-HTTP/3 dynamic handshake negotiation, 
-    Sec-Fetch headers, and fingerprint rotation.
+    Enterprise Stealth Engine: Features dynamic TLS rotation, full Client-Hint 
+    header spoofing, residential proxy fallback support, and exponential backoff.
     """
-    for impersonate_profile, os_name, sec_ua in STEALTH_PROFILES:
+    for attempt in range(max_retries):
+        impersonate_profile, os_name, sec_ua = STEALTH_PROFILES[attempt % len(STEALTH_PROFILES)]
+        
+        headers = {
+            "User-Agent": f"Mozilla/5.0 ({os_name}; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Sec-Ch-Ua": sec_ua,
+            "Sec-Ch-Ua-Mobile": "?0",
+            "Sec-Ch-Ua-Platform": f'"{os_name}"',
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1",
+            "Upgrade-Insecure-Requests": "1",
+        }
+        
+        proxies = {"http": ROTATING_PROXY, "https": ROTATING_PROXY} if (ROTATING_PROXY and attempt > 0) else None
+
         try:
-            headers = {
-                "User-Agent": f"Mozilla/5.0 ({os_name}; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-                "Accept-Language": "en-US,en;q=0.9",
-                "Sec-Ch-Ua": sec_ua,
-                "Sec-Ch-Ua-Mobile": "?0",
-                "Sec-Ch-Ua-Platform": f'"{os_name}"',
-                "Sec-Fetch-Dest": "document",
-                "Sec-Fetch-Mode": "navigate",
-                "Sec-Fetch-Site": "none",
-                "Sec-Fetch-User": "?1",
-                "Upgrade-Insecure-Requests": "1",
-            }
-            
-            async with AsyncSession(impersonate=impersonate_profile) as session:
+            async with AsyncSession(impersonate=impersonate_profile, proxies=proxies) as session:
                 res = await session.get(url, timeout=20, allow_redirects=True, headers=headers)
-                if res.status_code == 200 and len(res.text) > 100:
+                
+                if res.status_code == 200 and len(res.text) > 200 and "just a moment..." not in res.text.lower():
                     return {"success": True, "html": res.text, "status_code": res.status_code}
         except Exception:
-            continue
+            pass
             
-    return {"success": False, "error": "Anti-bot defenses unbroken after enterprise TLS rotation."}  
+        await asyncio.sleep(1.5 ** attempt)
+            
+    return {"success": False, "error": "Anti-bot defenses unbroken after multi-tier proxy & TLS rotation."}
 
 # =====================================================================
 # ZERO-SHOT EXTRACTION ENGINE
