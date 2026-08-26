@@ -8,3 +8,4 @@ supabase
 slowapi
 playwright
 playwright-stealth
+readability-lxml
