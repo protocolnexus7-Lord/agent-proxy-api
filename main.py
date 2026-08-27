@@ -3,17 +3,20 @@ import json
 import random
 import asyncio
 import os
+import hashlib
+import base64
+import httpx
 from typing import Optional, Dict, Any
 from bs4 import BeautifulSoup
 from readability import Document
 import html2text
-from fastapi import FastAPI, HTTPException, Header, Depends
+from fastapi import FastAPI, HTTPException, Header, Depends, Request, status
 from pydantic import BaseModel, HttpUrl
 from curl_cffi.requests import AsyncSession
 
 app = FastAPI(title="Nexus v6.3 Backend")
 
-# --- POLAR CRAWLER VERIFICATION ENDPOINT ---
+# --- ROOT HEALTH CHECK ---
 @app.get("/")
 def health_check():
     return {
@@ -21,7 +24,62 @@ def health_check():
         "service": "Nexus Protocol API",
         "version": "v6.3"
     }
+# --- CRYPTOMUS CONFIG & HELPERS ---
+CRYPTOMUS_MERCHANT_ID = "YOUR_CRYPTOMUS_MERCHANT_ID"
+CRYPTOMUS_API_KEY = "YOUR_CRYPTOMUS_PAYMENT_API_KEY"
+BASE_URL = "https://nexus-protocol-api.onrender.com"
 
+def generate_cryptomus_signature(payload_dict: dict, api_key: str) -> str:
+    json_data = json.dumps(payload_dict, separators=(',', ':'))
+    encoded_json = base64.b64encode(json_data.encode('utf-8')).decode('utf-8')
+    return hashlib.md5((encoded_json + api_key).encode('utf-8')).hexdigest()
+
+def verify_webhook_signature(payload_dict: dict, sign_header: str, api_key: str) -> bool:
+    data_to_hash = {k: v for k, v in payload_dict.items() if k != 'sign'}
+    json_data = json.dumps(data_to_hash, ensure_ascii=False, separators=(',', ':'))
+    encoded_json = base64.b64encode(json_data.encode('utf-8')).decode('utf-8')
+    calculated_sign = hashlib.md5((encoded_json + api_key).encode('utf-8')).hexdigest()
+    return calculated_sign.lower() == sign_header.lower()
+
+class CheckoutRequest(BaseModel):
+    user_email: str
+
+@app.post("/create-checkout")
+async def create_checkout(request_data: CheckoutRequest):
+    order_id = f"nexus_{hashlib.sha256(request_data.user_email.encode()).hexdigest()[:10]}"
+    payload = {
+        "amount": "29.00",
+        "currency": "USD",
+        "order_id": order_id,
+        "url_callback": f"{BASE_URL}/webhooks/cryptomus",
+        "url_success": f"{BASE_URL}/docs",
+        "is_payment_multiple": False,
+        "lifetime": 3600
+    }
+    signature = generate_cryptomus_signature(payload, CRYPTOMUS_API_KEY)
+    headers = {
+        "merchant": CRYPTOMUS_MERCHANT_ID,
+        "sign": signature,
+        "Content-Type": "application/json"
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.post("https://api.cryptomus.com/v1/payment", json=payload, headers=headers)
+    if response.status_code != 200:
+        raise HTTPException(status_code=400, detail="Failed to create payment session")
+    res_data = response.json()
+    return {"status": "success", "order_id": order_id, "checkout_url": res_data["result"]["url"]}
+
+@app.post("/webhooks/cryptomus")
+async def cryptomus_webhook(request: Request):
+    payload = await request.json()
+    received_sign = payload.get("sign")
+    if not received_sign or not verify_webhook_signature(payload, received_sign, CRYPTOMUS_API_KEY):
+        raise HTTPException(status_code=401, detail="Invalid signature")
+    if payload.get("status") in ["paid", "paid_over"]:
+        # Logic to provision key in your DB
+        pass
+    return {"status": "received"}
+    
 # PRODUCTION SECURITY BOUNCER
 async def verify_api_key(x_api_key: str = Header(None)):
     # 1. Reject missing or bad keys immediately
