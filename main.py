@@ -15,7 +15,13 @@ from pydantic import BaseModel, HttpUrl
 from curl_cffi.requests import AsyncSession
 
 app = FastAPI(title="Nexus v6.3 Backend")
+from fastapi.responses import PlainTextResponse
 
+@app.get("/add14096.html", response_class=PlainTextResponse)
+@app.get("/cryptomus_add14096.html", response_class=PlainTextResponse)
+def cryptomus_verification():
+    return "Cryptomus=add14096"
+    
 # --- ROOT HEALTH CHECK ---
 @app.get("/")
 def health_check():
