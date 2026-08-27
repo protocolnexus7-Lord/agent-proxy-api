@@ -38,10 +38,6 @@ def health_check():
     </html>
     '''
 
-        "status": "online",
-        "service": "Nexus Protocol API",
-        "version": "v6.3"
-    }
 # --- CRYPTOMUS CONFIG & HELPERS ---
 CRYPTOMUS_MERCHANT_ID = "YOUR_CRYPTOMUS_MERCHANT_ID"
 CRYPTOMUS_API_KEY = "YOUR_CRYPTOMUS_PAYMENT_API_KEY"
