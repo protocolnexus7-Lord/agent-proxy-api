@@ -11,11 +11,11 @@ from bs4 import BeautifulSoup
 from readability import Document
 import html2text
 from fastapi import FastAPI, HTTPException, Header, Depends, Request, status
+from fastapi.responses import HTMLResponse, PlainTextResponse
 from pydantic import BaseModel, HttpUrl
 from curl_cffi.requests import AsyncSession
 
 app = FastAPI(title="Nexus v6.3 Backend")
-from fastapi.responses import PlainTextResponse
 
 @app.get("/add14096.html", response_class=PlainTextResponse)
 @app.get("/cryptomus_add14096.html", response_class=PlainTextResponse)
@@ -23,9 +23,21 @@ def cryptomus_verification():
     return "Cryptomus=add14096"
     
 # --- ROOT HEALTH CHECK ---
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 def health_check():
-    return {
+    return '''
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta name="cryptomus" content="add14096" />
+        <title>Nexus Protocol API</title>
+      </head>
+      <body>
+        <h1>Nexus Protocol API Online</h1>
+      </body>
+    </html>
+    '''
+
         "status": "online",
         "service": "Nexus Protocol API",
         "version": "v6.3"
