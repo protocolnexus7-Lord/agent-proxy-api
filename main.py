@@ -30,6 +30,7 @@ def health_check():
     <html>
       <head>
         <meta name="cryptomus" content="add14096-ff52-49d1-b188-a538aa30dd74" />
+        <meta name="cryptomus" content="add14096" />
         <title>Nexus Protocol API</title>
       </head>
       <body>
