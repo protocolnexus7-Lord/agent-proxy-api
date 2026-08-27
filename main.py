@@ -11,16 +11,26 @@ from fastapi import FastAPI, HTTPException, Header, Depends
 from pydantic import BaseModel, HttpUrl
 from curl_cffi.requests import AsyncSession
 
-app = FastAPI(title="Nexus v6.2 Backend")
+app = FastAPI(title="Nexus v6.3 Backend")
+
+# --- POLAR CRAWLER VERIFICATION ENDPOINT ---
+@app.get("/")
+def health_check():
+    return {
+        "status": "online",
+        "service": "Nexus Protocol API",
+        "version": "v6.3"
+    }
 
 # PRODUCTION SECURITY BOUNCER
-async def verify_api_key(x_api_key: str = Header(...)):
+async def verify_api_key(x_api_key: str = Header(None)):
     # 1. Reject missing or bad keys immediately
     if not x_api_key or not x_api_key.startswith("sk_live_"):
         raise HTTPException(
-            status_code=401, 
-            detail="Unauthorized: Invalid or missing API key format."
+            status_code=401,
+            detail="Unauthorized: Invalid API Key format."
         )
+
     
     # 2. Hardcoded master key check (for QA testing)
     if x_api_key == "sk_live_nexus_2026":
