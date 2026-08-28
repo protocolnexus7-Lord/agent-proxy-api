@@ -3,24 +3,95 @@ import json
 import random
 import asyncio
 import os
+import hmac
 import hashlib
 import base64
+import logging
 import httpx
 from typing import Optional, Dict, Any
 from bs4 import BeautifulSoup
 from readability import Document
 import html2text
-from fastapi import FastAPI, HTTPException, Header, Depends, Request, status
-from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi import FastAPI, HTTPException, Header, Depends, Request, Security, status
+from fastapi.responses import HTMLResponse, PlainTextResponse, JSONResponse
+from fastapi.security import APIKeyHeader
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, HttpUrl
 from curl_cffi.requests import AsyncSession
 
-app = FastAPI(title="Nexus v6.3 Backend")
+# --- DYNAMIC CONFIGURATION & SECURITY SETUP ---
+API_KEY_NAME = "x-api-key"
+MASTER_API_KEY = os.getenv("MASTER_API_KEY", "sk_live_nexus_2026")
+CRYPTOMUS_PAYMENT_KEY = os.getenv("CRYPTOMUS_PAYMENT_KEY", "your_cryptomus_payment_key")
+CRYPTOMUS_MERCHANT_ID = os.getenv("CRYPTOMUS_MERCHANT_ID", "your_merchant_id")
 
+app = FastAPI(
+    title="Nexus v6.3 Backend",
+    description="Enterprise Stealth Web Extraction & Anti-Bot Infrastructure",
+    version="6.3.0",
+    docs_url=None,
+    redoc_url=None
+)
+
+# --- SECURITY HEADERS & CORS MIDDLEWARE ---
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+)
+
+@app.middleware("http")
+async def inject_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
+
+# --- GLOBAL UNHANDLED EXCEPTION ISOLATOR ---
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logging.error(f"Internal Security Intercept: {str(exc)}")
+    return JSONResponse(
+        status_code=500,
+        content={"status": "error", "message": "An internal execution exception occurred. Request isolated safely."}
+    )
+
+# --- AUTHENTICATION & Cryptomus HMAC VERIFICATION ---
+api_key_header = APIKeyHeader(name=API_KEY_NAME, auto_error=False)
+
+async def verify_api_key(header_key: str = Security(api_key_header)):
+    if not header_key or not hmac.compare_digest(header_key, MASTER_API_KEY):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing API authorization token."
+        )
+    return header_key
+
+def verify_webhook_signature(payload: dict, received_sign: str) -> bool:
+    try:
+        data = {k: v for k, v in payload.items() if k != "sign"}
+        sorted_data = dict(sorted(data.items()))
+        serialized = str(sorted_data).encode('utf-8')
+        expected_sign = hmac.new(
+            CRYPTOMUS_PAYMENT_KEY.encode('utf-8'),
+            serialized,
+            hashlib.sha256
+        ).hexdigest()
+        return hmac.compare_digest(expected_sign, received_sign)
+    except Exception:
+        return False
+
+# --- DEDICATED CRYPTOMUS FILE VERIFICATION ROUTES ---
 @app.get("/add14096.html", response_class=PlainTextResponse)
 @app.get("/cryptomus_add14096.html", response_class=PlainTextResponse)
 def cryptomus_verification():
     return "Cryptomus=add14096"
+
     
 # --- ROOT HEALTH CHECK ---
 # --- ADVANCED IN-CODE GRAPHICAL SAAS LANDING PAGE & MODERATION ROUTE ---
