@@ -84,15 +84,37 @@ async def create_checkout(request_data: CheckoutRequest):
     res_data = response.json()
     return {"status": "success", "order_id": order_id, "checkout_url": res_data["result"]["url"]}
 
+PROCESSED_ORDERS = set()
+
 @app.post("/webhooks/cryptomus")
 async def cryptomus_webhook(request: Request):
     payload = await request.json()
     received_sign = payload.get("sign")
-    if not received_sign or not verify_webhook_signature(payload, received_sign, CRYPTOMUS_API_KEY):
+    
+    if not received_sign or not verify_webhook_signature(payload, received_sign):
         raise HTTPException(status_code=401, detail="Invalid signature")
-    if payload.get("status") in ["paid", "paid_over"]:
-        # Logic to provision key in your DB
-        pass
+        
+    order_id = payload.get("order_id", "")
+    payment_status = payload.get("status", "")
+    amount = float(payload.get("amount", 0))
+
+    if order_id in PROCESSED_ORDERS:
+        return {"status": "ignored", "reason": "already_processed"}
+
+    if payment_status in ["paid", "paid_over"]:
+        # Calculate dynamic credit allocation based on dollar amount
+        credits_to_add = 0
+        if amount >= 29.00:
+            credits_to_add = 100000
+        elif amount >= 10.00:
+            credits_to_add = 55000
+        elif amount >= 1.00:
+            credits_to_add = 5000
+
+        # Provision credits in Supabase or local state
+        PROCESSED_ORDERS.add(order_id)
+        return {"status": "success", "credited": credits_to_add, "order_id": order_id}
+
     return {"status": "received"}
     
 # PRODUCTION SECURITY BOUNCER
