@@ -23,21 +23,320 @@ def cryptomus_verification():
     return "Cryptomus=add14096"
     
 # --- ROOT HEALTH CHECK ---
+# --- ADVANCED IN-CODE GRAPHICAL SAAS LANDING PAGE & MODERATION ROUTE ---
 @app.get("/", response_class=HTMLResponse)
 def health_check():
-    return '''
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta name="cryptomus" content="add14096-ff52-49d1-b188-a538aa30dd74" />
-        <meta name="cryptomus" content="add14096" />
-        <title>Nexus Protocol API</title>
-      </head>
-      <body>
-        <h1>Nexus Protocol API Online</h1>
-      </body>
-    </html>
-    '''
+    return '''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Cryptomus Verification Meta-Tags -->
+    <meta name="cryptomus" content="add14096-ff52-49d1-b188-a538aa30dd74" />
+    <meta name="cryptomus" content="add14096" />
+    <title>Nexus Protocol | Enterprise Stealth & Web Extraction Infrastructure</title>
+    
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --panel-bg: rgba(30, 41, 59, 0.7);
+            --border-color: #334155;
+            --accent-blue: #38bdf8;
+            --accent-glow: #0284c7;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Pure CSS Dynamic Canvas Backdrop */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.25;
+            background: radial-gradient(circle at 50% 50%, rgba(2, 132, 199, 0.15), transparent 60%);
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Graphical Glassmorphism Navigation Bar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 30px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .logo-text {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--accent-blue);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite; }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Hero Graphic Header */
+        .hero {
+            text-align: center;
+            margin: 60px 0 40px 0;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 900;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #ffffff 0%, var(--accent-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 30px auto;
+        }
+
+        /* Grid Cards for Micro-Token Plans */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 35px 25px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 12px 30px rgba(2, 132, 199, 0.2);
+        }
+
+        .card.popular {
+            border: 2px solid var(--accent-blue);
+            background: rgba(30, 41, 59, 0.85);
+        }
+
+        .badge-popular {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-glow);
+            color: #fff;
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .price-tag {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 15px 0 5px 0;
+        }
+
+        .credits-val {
+            font-size: 1.1rem;
+            color: var(--accent-blue);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .btn-buy {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: var(--accent-glow);
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-buy:hover { background: #0369a1; }
+
+        /* API Console Simulation Area */
+        .console-area {
+            background: #020617;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 50px;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
+        }
+
+        .console-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .circle { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ef4444; }
+        .yellow { background: #f59e0b; }
+        .green { background: #10b981; }
+
+        pre {
+            color: #38bdf8;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="bg-canvas"></div>
+
+    <div class="content-layer">
+        <nav>
+            <div class="logo-text">⚡ NEXUS PROTOCOL</div>
+            <div class="status-badge"><span class="dot"></span> Engine Online v6.3</div>
+        </nav>
+
+        <section class="hero">
+            <h1>Autonomous Anti-Bot & Stealth Infrastructure</h1>
+            <p>Zero-maintenance API proxy layer for AI agents, web extraction pipelines, and automated zero-shot structured JSON parsers.</p>
+        </section>
+
+        <div class="pricing-grid">
+            <div class="card">
+                <h3>Flash Pack</h3>
+                <div class="price-tag">$1.00</div>
+                <div class="credits-val">5,000 API Credits</div>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Ideal for lightweight micro-tasks and script testing.</p>
+                <button class="btn-buy" onclick="initiateCheckout('1.00', 'plan_1usd')">Purchase via Cryptomus</button>
+            </div>
+
+            <div class="card popular">
+                <div class="badge-popular">Most Popular</div>
+                <h3>Developer Pro</h3>
+                <div class="price-tag">$10.00</div>
+                <div class="credits-val">55,000 API Credits</div>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Includes +10% bonus credit allocation & high concurrency.</p>
+                <button class="btn-buy" onclick="initiateCheckout('10.00', 'plan_10usd')">Purchase via Cryptomus</button>
+            </div>
+
+            <div class="card">
+                <h3>Agency Scale</h3>
+                <div class="price-tag">$29.00</div>
+                <div class="credits-val">100,000 API Credits</div>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Maximum residential proxy priority & stealth throughput.</p>
+                <button class="btn-buy" onclick="initiateCheckout('29.00', 'plan_29usd')">Purchase via Cryptomus</button>
+            </div>
+        </div>
+
+        <div class="console-area">
+            <div class="console-header">
+                <span class="circle red"></span>
+                <span class="circle yellow"></span>
+                <span class="circle green"></span>
+                <span style="color: var(--text-muted); font-size: 0.8rem; margin-left: 10px;">SDK Endpoint Quickstart</span>
+            </div>
+            <pre><code>curl -X POST "https://nexus-protocol-api.onrender.com/api/v1/scrape" \
+  -H "x-api-key: sk_live_nexus_2026" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://target-website.com/data"}'</code></pre>
+        </div>
+
+        <footer>
+            &copy; 2026 Nexus Protocol Inc. All rights reserved. | Cryptomus Merchant Verification Node Active
+        </footer>
+    </div>
+
+    <script>
+        async function initiateCheckout(amountVal, planId) {
+            alert('Initializing Cryptomus payment node for $' + amountVal + ' USD...');
+            try {
+                const response = await fetch('/create-checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_email: 'user_123@nexus.io', amount: amountVal, plan_id: planId })
+                });
+                const data = await response.json();
+                if (data.checkout_url) {
+                    window.location.href = data.checkout_url;
+                }
+            } catch (err) {
+                console.log('Checkout initialisation mode standard redirect.');
+            }
+        }
+    </script>
+</body>
+</html>'''
+    
 
 # --- CRYPTOMUS CONFIG & HELPERS ---
 CRYPTOMUS_MERCHANT_ID = "YOUR_CRYPTOMUS_MERCHANT_ID"
