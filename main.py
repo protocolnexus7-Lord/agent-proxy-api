@@ -32,7 +32,83 @@ app = FastAPI(
     docs_url=None,
     redoc_url=None
 )
+from fastapi.responses import HTMLResponse
 
+@app.get("/", response_class=HTMLResponse)
+async def serve_landing_page():
+    return """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>NEXUS PROTOCOL — Autonomous Stealth Extraction Engine</title>
+        <!-- Cryptomus Verification Meta-Tags -->
+        <meta name="cryptomus" content="add14096-ff52-49d1-b188-a538aa30dd74" />
+        <meta name="cryptomus-verification" content="add14096" />
+        <style>
+            :root {
+                --bg: #030712;
+                --card-bg: #0b0f19;
+                --accent: #6366f1;
+                --accent-glow: rgba(99, 102, 241, 0.35);
+                --text-main: #f9fafb;
+                --text-muted: #9ca3af;
+                --border: #1f2937;
+                --success: #10b981;
+            }
+            * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; }
+            body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow-x: hidden; position: relative; }
+            .glow-bg { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, var(--accent-glow) 0%, rgba(0,0,0,0) 70%); top: -200px; z-index: 0; pointer-events: none; }
+            .container { position: relative; z-index: 1; max-width: 900px; width: 90%; text-align: center; padding: 2rem; }
+            .badge { display: inline-block; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--accent); color: #818cf8; padding: 0.4rem 1rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1.5rem; }
+            h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; line-height: 1.1; margin-bottom: 1rem; background: linear-gradient(to right, #ffffff, #93c5fd, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+            p.subtitle { font-size: 1.25rem; color: var(--text-muted); max-width: 650px; margin: 0 auto 2.5rem; line-height: 1.6; }
+            .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 3rem; text-align: left; }
+            .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; transition: transform 0.2s, border-color 0.2s; }
+            .card:hover { transform: translateY(-4px); border-color: var(--accent); }
+            .card h3 { font-size: 1.1rem; color: #fff; margin-bottom: 0.5rem; }
+            .card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+            .status-box { background: #000; border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; max-width: 450px; margin: 0 auto; font-family: monospace; font-size: 0.9rem; }
+            .dot { width: 10px; height: 10px; background-color: var(--success); border-radius: 50%; display: inline-block; box-shadow: 0 0 8px var(--success); }
+            .footer { margin-top: 4rem; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 2rem; width: 100%; }
+        </style>
+    </head>
+    <body>
+        <div class="glow-bg"></div>
+        <div class="container">
+            <div class="badge">Nexus v6.3 Enterprise Edition</div>
+            <h1>Stealth Extraction & Anti-Bot Infrastructure</h1>
+            <p class="subtitle">Distributed high-performance API protocol utilizing TLS fingerprint emulation, residential proxies, and dynamic web scraping bypasses.</p>
+            
+            <div class="status-box">
+                <div><span class="dot"></span> <strong>CORE ENGINE:</strong> ONLINE</div>
+                <div style="color: var(--text-muted);">v6.3.0 Engine</div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>🛡️ TLS Fingerprinting</h3>
+                    <p>Bypasses Cloudflare, Akamai, and Datadome using asynchronous low-level sockets.</p>
+                </div>
+                <div class="card">
+                    <h3>⚡ Godmode Execution</h3>
+                    <p>Sub-second response times with structured JSON DOM parsing and extraction.</p>
+                </div>
+                <div class="card">
+                    <h3>💳 Cryptomus Gateways</h3>
+                    <p>Fully integrated dynamic cryptographic invoicing and automated callback verification.</p>
+                </div>
+            </div>
+
+            <div class="footer">
+                &copy; 2026 Nexus Protocol. All infrastructure systems operational.
+            </div>
+        </div>
+    </body>
+    </html>
+    """
+    
 # --- SECURITY HEADERS & CORS MIDDLEWARE ---
 app.add_middleware(
     CORSMiddleware,
