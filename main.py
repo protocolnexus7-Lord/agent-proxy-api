@@ -638,31 +638,34 @@ def health_check():
         </section>
 
         <div class="pricing-grid">
-            <div class="card">
-                <h3>Flash Pack</h3>
-                <div class="price-tag">$1.00</div>
-                <div class="credits-val">5,000 API Credits</div>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Ideal for lightweight micro-tasks and script testing.</p>
-                <button class="btn-buy" onclick="initiateCheckout('1.00', 'plan_1usd')">Purchase via Cryptomus</button>
-            </div>
+    <!-- $1 Tier -->
+    <div class="card">
+        <h3>Flash Pack</h3>
+        <div class="price-tag">$1</div>
+        <div class="credits-val">5,000 Credits</div>
+        <p style="color: var(--text-dim);">Ideal for testing & micro-tasks</p>
+        <button class="btn-buy" onclick="initiateCheckout(1.00)">Get 5,000 Credits</button>
+    </div>
 
-            <div class="card popular">
-                <div class="badge-popular">Most Popular</div>
-                <h3>Developer Pro</h3>
-                <div class="price-tag">$10.00</div>
-                <div class="credits-val">55,000 API Credits</div>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Includes +10% bonus credit allocation & high concurrency.</p>
-                <button class="btn-buy" onclick="initiateCheckout('10.00', 'plan_10usd')">Purchase via Cryptomus</button>
-            </div>
+    <!-- $10 Tier -->
+    <div class="card popular">
+        <div class="badge-popular">MOST POPULAR</div>
+        <h3>Developer Pro</h3>
+        <div class="price-tag">$10</div>
+        <div class="credits-val">55,000 Credits</div>
+        <p style="color: var(--text-dim);">Best balance for scaling apps</p>
+        <button class="btn-buy" onclick="initiateCheckout(10.00)">Get 55,000 Credits</button>
+    </div>
 
-            <div class="card">
-                <h3>Agency Scale</h3>
-                <div class="price-tag">$29.00</div>
-                <div class="credits-val">100,000 API Credits</div>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Maximum residential proxy priority & stealth throughput.</p>
-                <button class="btn-buy" onclick="initiateCheckout('29.00', 'plan_29usd')">Purchase via Cryptomus</button>
-            </div>
-        </div>
+    <!-- $29 Tier -->
+    <div class="card">
+        <h3>Agency Scale</h3>
+        <div class="price-tag">$29</div>
+        <div class="credits-val">100,000 Credits</div>
+        <p style="color: var(--text-dim);">Maximum volume & performance</p>
+        <button class="btn-buy" onclick="initiateCheckout(29.00)">Get 1 Lakh Credits</button>
+    </div>
+</div>
 
         <div class="console-area">
             <div class="console-header">
@@ -701,8 +704,8 @@ def health_check():
         }
     </script>
 </body>
-</html>'''
- """   
+</html>
+"""
 
 # --- CRYPTOMUS CONFIG & HELPERS ---
 CRYPTOMUS_MERCHANT_ID = "YOUR_CRYPTOMUS_MERCHANT_ID"
