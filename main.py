@@ -135,20 +135,21 @@ async def serve_landing_page():
                 </label>
             </div>
 
-            <div class="grid">
+                        <div class="grid">
                 <div class="card">
-                    <h3>🛡️ TLS Fingerprint Shield</h3>
-                    <p>Bypasses advanced perimeter defenses including Cloudflare, Akamai, and Datadome using randomized low-level socket handshakes.</p>
+                    <h3>🛡️ Stealth Pipeline</h3>
+                    <p>Proprietary TLS fingerprint randomization delivering zero-friction data delivery across all edge targets.</p>
                 </div>
                 <div class="card">
-                    <h3>⚡ Godmode Execution</h3>
-                    <p>Sub-second async response parsing engineered with strict memory safety and optimized structural JSON DOM mapping.</p>
+                    <h3>⚡ High-Velocity Engine</h3>
+                    <p>Ultra-low latency extraction architecture optimized for sub-second global response times.</p>
                 </div>
                 <div class="card">
-                    <h3>💳 Cryptomus Gateways</h3>
-                    <p>Fully integrated cryptographic invoicing pipeline featuring automated HMAC callback execution and ledger synchronization.</p>
+                    <h3>💳 Automated Ledger</h3>
+                    <p>Instant cryptographic settlement layer with secure, automated verification.</p>
                 </div>
             </div>
+
 
             <div class="footer">
                 <div>&copy; 2026 Nexus Protocol. All infrastructure nodes secure.</div>
