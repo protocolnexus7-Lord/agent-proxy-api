@@ -702,7 +702,7 @@ def health_check():
     </script>
 </body>
 </html>'''
-    
+ """   
 
 # --- CRYPTOMUS CONFIG & HELPERS ---
 CRYPTOMUS_MERCHANT_ID = "YOUR_CRYPTOMUS_MERCHANT_ID"
@@ -948,7 +948,7 @@ async def scrape_target(payload: ScrapePayload, api_key: str = Depends(verify_ap
         "status": "success",
         "engine_mode": "godmode_async_tls",
         "status_code": response.status_code,
-        "html": response.text[:1000] if not payload.extract_markdown else None
+        "html": response.text[:1000] if not payload.extract_markdown else None,
     }
 
     if payload.schema and response.text:
