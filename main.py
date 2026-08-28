@@ -18,6 +18,7 @@ from fastapi.security import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, HttpUrl
 from curl_cffi.requests import AsyncSession
+from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
 # --- DYNAMIC CONFIGURATION & SECURITY SETUP ---
@@ -34,7 +35,232 @@ app = FastAPI(
     redoc_url=None
 )
 
-@app.get("/", response_class=HTMLResponse) 
+app = FastAPI(title="Nexus Protocol")
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_landing_page():
+    return """
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>NEXUS PROTOCOL — Autonomous Stealth Extraction Engine</title>
+        <!-- Cryptomus Verification Meta-Tags -->
+        <meta name="cryptomus" content="add14096-ff52-49d1-b188-a538aa30dd74" />
+        <meta name="cryptomus-verification" content="add14096" />
+        <style>
+            :root {
+                --bg: #02040a;
+                --card-bg: rgba(11, 15, 25, 0.75);
+                --accent: #6366f1;
+                --accent-glow: rgba(99, 102, 241, 0.4);
+                --text-main: #f9fafb;
+                --text-muted: #9ca3af;
+                --border: rgba(31, 41, 55, 0.9);
+                --success: #10b981;
+            }
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { 
+                background-color: var(--bg); 
+                color: var(--text-main); 
+                min-height: 100vh; 
+                display: flex; 
+                flex-direction: column; 
+                align-items: center; 
+                justify-content: flex-start; 
+                overflow-x: hidden; 
+                position: relative; 
+                padding: 1.5rem 1rem;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            }
+            .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+            
+            /* Cyber Grid Background Effect */
+            .grid-bg { position: fixed; width: 100vw; height: 100vh; background-image: linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px); background-size: 32px 32px; z-index: 0; pointer-events: none; }
+            .glow-orb { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, var(--accent-glow) 0%, rgba(0,0,0,0) 70%); top: -150px; z-index: 0; pointer-events: none; filter: blur(60px); }
+
+            /* Top Telemetry & Language Bar */
+            .top-telemetry { position: relative; z-index: 2; width: 100%; max-width: 950px; display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 1.2rem; margin-bottom: 2rem; backdrop-filter: blur(12px); font-size: 0.8rem; flex-wrap: wrap; gap: 0.8rem; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+            .telemetry-item { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); }
+            .telemetry-item span { color: var(--text-main); font-weight: bold; }
+            .lang-select { background: #030712; color: #818cf8; border: 1px solid var(--accent); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; outline: none; font-weight: bold; }
+
+            .container { position: relative; z-index: 1; max-width: 950px; width: 100%; text-align: center; }
+            .badge { display: inline-block; background: rgba(99, 102, 241, 0.15); border: 1px solid var(--accent); color: #818cf8; padding: 0.4rem 1.2rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1.5rem; box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); }
+            
+            h1 { font-size: clamp(2.2rem, 4.5vw, 3.5rem); font-weight: 800; line-height: 1.15; margin-bottom: 1.2rem; background: linear-gradient(135deg, #ffffff 30%, #93c5fd 70%, #6366f1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.02em; }
+            p.subtitle { font-size: 1.05rem; color: var(--text-muted); max-width: 720px; margin: 0 auto 2rem; line-height: 1.6; }
+
+            .status-box { background: rgba(0, 0, 0, 0.7); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1.5rem; display: inline-flex; align-items: center; gap: 2rem; margin-bottom: 2rem; font-size: 0.85rem; box-shadow: inset 0 0 15px rgba(0,0,0,0.9); flex-wrap: wrap; justify-content: center; }
+            .status-item { display: flex; align-items: center; gap: 0.6rem; }
+            .dot { width: 9px; height: 9px; background-color: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite; }
+            @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+            /* Terms Compliance Box */
+            .compliance-box { background: rgba(11, 15, 25, 0.5); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.25rem; margin: 0 auto 2.5rem; max-width: 750px; display: flex; align-items: flex-start; gap: 0.75rem; text-align: left; backdrop-filter: blur(8px); }
+            .compliance-box input[type="checkbox"] { accent-color: var(--accent); margin-top: 0.2rem; cursor: pointer; }
+            .compliance-box label { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; cursor: pointer; }
+
+            /* Feature Grid */
+            .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; text-align: left; margin-bottom: 3.5rem; }
+            .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.8rem; backdrop-filter: blur(10px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+            .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0; transition: opacity 0.3s; }
+            .card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.3); }
+            .card:hover::before { opacity: 1; }
+            .card h3 { font-size: 1.1rem; color: #fff; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 700; }
+            .card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+
+            /* Pricing Packages Section */
+            .section-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff; letter-spacing: -0.01em; }
+            .section-subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 2rem; }
+            .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; text-align: left; margin-bottom: 4rem; }
+            .pricing-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 2rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between; backdrop-filter: blur(12px); position: relative; transition: all 0.3s ease; }
+            .pricing-card.featured { border-color: var(--accent); box-shadow: 0 0 25px rgba(99, 102, 241, 0.25); background: rgba(15, 23, 42, 0.85); }
+            .pricing-card.featured::after { content: 'MOST POPULAR'; position: absolute; top: -12px; right: 20px; background: var(--accent); color: #fff; font-size: 0.65rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 9999px; letter-spacing: 0.1em; }
+            .pricing-card h4 { font-size: 1.2rem; color: #fff; margin-bottom: 0.5rem; }
+            .pricing-card .price { font-size: 2.2rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
+            .pricing-card .price span { font-size: 0.9rem; color: var(--text-muted); font-weight: 400; }
+            .pricing-features { list-style: none; margin-bottom: 1.8rem; font-size: 0.85rem; color: var(--text-muted); }
+            .pricing-features li { margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
+            .pricing-features li::before { content: '✓'; color: var(--success); font-weight: bold; }
+            
+            .btn { display: inline-block; width: 100%; text-align: center; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--accent); color: #fff; padding: 0.75rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-decoration: none; cursor: pointer; transition: all 0.2s ease; }
+            .btn:hover { background: var(--accent); box-shadow: 0 0 15px rgba(99, 102, 241, 0.5); transform: translateY(-2px); }
+            .btn-primary { background: var(--accent); box-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
+
+            .footer { margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 1rem; }
+        </style>
+    </head>
+    <body>
+        <div class="grid-bg"></div>
+        <div class="glow-orb"></div>
+
+        <!-- Top Telemetry Bar -->
+        <div class="top-telemetry mono">
+            <div class="telemetry-item">🌐 
+                <select class="lang-select" id="langSelect">
+                    <option value="en">ENGLISH (GLOBAL)</option>
+                    <option value="es">ESPAÑOL</option>
+                    <option value="zh">中文 (CHINESE)</option>
+                    <option value="ja">日本語 (JAPANESE)</option>
+                    <option value="de">DEUTSCH</option>
+                    <option value="fr">FRANÇAIS</option>
+                </select>
+            </div>
+            <div class="telemetry-item">⚡ PING: <span style="color: var(--success);">12ms</span></div>
+            <div class="telemetry-item">🕒 UTC TIME: <span id="utcClock" style="color: #818cf8;">00:00:00 UTC</span></div>
+        </div>
+
+        <div class="container">
+            <div class="badge mono">Nexus v6.3 Enterprise Edition</div>
+            <h1>Autonomous Stealth Extraction & Anti-Bot Infrastructure</h1>
+            <p class="subtitle">Next-generation distributed high-performance API protocol utilizing low-level TLS fingerprint emulation, residential routing networks, and automated Cryptomus ledger verification.</p>
+            
+            <div class="status-box mono">
+                <div class="status-item"><span class="dot"></span> <strong>CORE ENGINE:</strong> <span style="color: var(--success);">ONLINE</span></div>
+                <div class="status-item" style="color: var(--text-muted);">PROTOCOL: <span style="color: #fff;">TLS_ASYNC_v6.3</span></div>
+                <div class="status-item" style="color: var(--text-muted);">ENCRYPTION: <span style="color: #fff;">HMAC-SHA256</span></div>
+            </div>
+
+            <!-- Compliance Box -->
+            <div class="compliance-box mono">
+                <input type="checkbox" id="termsAck" checked disabled />
+                <label for="termsAck">
+                    <strong>Operational Compliance Notice:</strong> Nexus Protocol provides a lawful, high-performance software infrastructure framework. Utilization of this software, routing pipelines, and data acquisition tools remains strictly at the sole discretion and legal responsibility of the end user, who assumes total liability for adherence to applicable jurisdictional regulations.
+                </label>
+            </div>
+
+            <!-- Core Features -->
+            <div class="grid">
+                <div class="card">
+                    <h3>🛡️ Stealth Pipeline</h3>
+                    <p>Proprietary TLS fingerprint randomization delivering zero-friction data delivery across all edge targets.</p>
+                </div>
+                <div class="card">
+                    <h3>⚡ High-Velocity Engine</h3>
+                    <p>Ultra-low latency extraction architecture optimized for sub-second global response times.</p>
+                </div>
+                <div class="card">
+                    <h3>💳 Automated Ledger</h3>
+                    <p>Instant cryptographic settlement layer with secure, automated verification.</p>
+                </div>
+            </div>
+
+            <!-- Packages / Pricing Section -->
+            <h2 class="section-title">Deployment Packages</h2>
+            <p class="section-subtitle">Select an infrastructure tier tailored to your API execution frequency.</p>
+            
+            <div class="pricing-grid">
+                <!-- Standard Tier -->
+                <div class="pricing-card">
+                    <div>
+                        <h4>Developer Tier</h4>
+                        <div class="price mono">$299 <span>/mo</span></div>
+                        <ul class="pricing-features mono">
+                            <li>100,000 API Calls / month</li>
+                            <li>Standard TLS Randomization</li>
+                            <li>99.5% Uptime SLA</li>
+                            <li>Community Discord Support</li>
+                        </ul>
+                    </div>
+                    <a href="#checkout" class="btn mono">Deploy Tier</a>
+                </div>
+
+                <!-- Featured Tier -->
+                <div class="pricing-card featured">
+                    <div>
+                        <h4>Professional Tier</h4>
+                        <div class="price mono">$999 <span>/mo</span></div>
+                        <ul class="pricing-features mono">
+                            <li>1,000,000 API Calls / month</li>
+                            <li>Advanced Stealth Routing</li>
+                            <li>99.9% Uptime SLA</li>
+                            <li>Sub-50ms Global Latency</li>
+                            <li>Priority Telegram Support</li>
+                        </ul>
+                    </div>
+                    <a href="#checkout" class="btn btn-primary mono">Deploy Tier</a>
+                </div>
+
+                <!-- Enterprise Tier -->
+                <div class="pricing-card">
+                    <div>
+                        <h4>Enterprise Enclave</h4>
+                        <div class="price mono">Custom</div>
+                        <ul class="pricing-features mono">
+                            <li>Unlimited Execution Nodes</li>
+                            <li>Dedicated IP Infrastructure</li>
+                            <li>Custom TLS Fingerprints</li>
+                            <li>24/7 Dedicated Ops Support</li>
+                            <li>Instant Crypto Settlement</li>
+                        </ul>
+                    </div>
+                    <a href="#checkout" class="btn mono">Contact Ops</a>
+                </div>
+            </div>
+
+            <div class="footer mono">
+                <div>&copy; 2026 Nexus Protocol. All infrastructure nodes secure.</div>
+                <div style="color: #818cf8; font-weight: bold;">SECURE ENCLAVE ACTIVE</div>
+            </div>
+        </div>
+
+        <script>
+            function updateClock() {
+                const now = new Date();
+                const utcString = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+                const clockEl = document.getElementById('utcClock');
+                if (clockEl.innerText !== utcString) {
+                    clockEl.innerText = utcString;
+                }
+            }
+            setInterval(updateClock, 1000);
+            updateClock();
+        </script>
+    </body>
+    </html>
+    """
 
 async def serve_landing_page():
     return """
@@ -99,80 +325,7 @@ async def serve_landing_page():
         </style>
     </head>
     <body>
-        <div class="grid-bg"></div>
-        <div class="glow-orb"></div>
 
-        <div class="top-telemetry">
-            <div class="telemetry-item">🌐 
-                <select class="lang-select" id="langSelect">
-                    <option value="en">ENGLISH (GLOBAL)</option>
-                    <option value="es">ESPAÑOL</option>
-                    <option value="zh">中文 (CHINESE)</option>
-                    <option value="ja">日本語 (JAPANESE)</option>
-                    <option value="de">DEUTSCH</option>
-                    <option value="fr">FRANÇAIS</option>
-                </select>
-            </div>
-            <div class="telemetry-item">⚡ PING: <span style="color: var(--success);">12ms</span></div>
-            <div class="telemetry-item">🕒 UTC TIME: <span id="utcClock" style="color: #818cf8;">00:00:00 UTC</span></div>
-        </div>
-
-        <div class="container">
-            <div class="badge">Nexus v6.3 Enterprise Edition</div>
-            <h1>Autonomous Stealth Extraction & Anti-Bot Infrastructure</h1>
-            <p class="subtitle">Next-generation distributed high-performance API protocol utilizing low-level TLS fingerprint emulation, residential routing networks, and automated Cryptomus ledger verification.</p>
-            
-            <div class="status-box">
-                <div class="status-item"><span class="dot"></span> <strong>CORE ENGINE:</strong> <span style="color: var(--success);">ONLINE</span></div>
-                <div class="status-item" style="color: var(--text-muted);">PROTOCOL: <span style="color: #fff;">TLS_ASYNC_v6.3</span></div>
-                <div class="status-item" style="color: var(--text-muted);">ENCRYPTION: <span style="color: #fff;">HMAC-SHA256</span></div>
-            </div>
-
-            <div class="compliance-box">
-                <input type="checkbox" id="termsAck" checked disabled />
-                <label for="termsAck">
-                    <strong>Operational Compliance Notice:</strong> Nexus Protocol provides a lawful, high-performance software infrastructure framework. Utilization of this software, routing pipelines, and data acquisition tools remains strictly at the sole discretion and legal responsibility of the end user, who assumes total liability for adherence to applicable jurisdictional regulations.
-                </label>
-            </div>
-
-                        <div class="grid">
-                <div class="card">
-                    <h3>🛡️ Stealth Pipeline</h3>
-                    <p>Proprietary TLS fingerprint randomization delivering zero-friction data delivery across all edge targets.</p>
-                </div>
-                <div class="card">
-                    <h3>⚡ High-Velocity Engine</h3>
-                    <p>Ultra-low latency extraction architecture optimized for sub-second global response times.</p>
-                </div>
-                <div class="card">
-                    <h3>💳 Automated Ledger</h3>
-                    <p>Instant cryptographic settlement layer with secure, automated verification.</p>
-                </div>
-            </div>
-
-
-            <div class="footer">
-                <div>&copy; 2026 Nexus Protocol. All infrastructure nodes secure.</div>
-                <div style="color: #818cf8; font-weight: bold;">SECURE ENCLAVE ACTIVE</div>
-            </div>
-        </div>
-
-        <script>
-            // Live Ticking UTC Clock with Seconds
-            function updateClock() {
-                const now = new Date();
-                const utcString = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-                const clockEl = document.getElementById('utcClock');
-                if (clockEl.innerText !== utcString) {
-                    clockEl.innerText = utcString;
-                }
-            }
-            setInterval(updateClock, 1000);
-            updateClock();
-        </script>
-    </body>
-    </html>
-    """
     
     
 # --- SECURITY HEADERS & CORS MIDDLEWARE ---
