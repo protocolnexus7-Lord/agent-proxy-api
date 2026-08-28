@@ -18,6 +18,7 @@ from fastapi.security import APIKeyHeader
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, HttpUrl
 from curl_cffi.requests import AsyncSession
+from fastapi.responses import HTMLResponse
 
 # --- DYNAMIC CONFIGURATION & SECURITY SETUP ---
 API_KEY_NAME = "x-api-key"
@@ -32,7 +33,6 @@ app = FastAPI(
     docs_url=None,
     redoc_url=None
 )
-from fastapi.responses import HTMLResponse
 
 @app.get("/", response_class=HTMLResponse)
 async def serve_landing_page():
