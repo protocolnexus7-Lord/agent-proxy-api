@@ -40,172 +40,221 @@ app = FastAPI(title="Nexus Protocol")
 @app.get("/", response_class=HTMLResponse)
 async def serve_landing_page():
     return """
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>NEXUS PROTOCOL — Autonomous Stealth Extraction Engine</title>
-        <!-- Cryptomus Verification Meta-Tags -->
-        <meta name="cryptomus" content="add14096-ff52-49d1-b188-a538aa30dd74" />
-        <meta name="cryptomus-verification" content="add14096" />
-        <style>
-            :root {
-                --bg: #02040a;
-                --card-bg: rgba(11, 15, 25, 0.75);
-                --accent: #6366f1;
-                --accent-glow: rgba(99, 102, 241, 0.4);
-                --text-main: #f9fafb;
-                --text-muted: #9ca3af;
-                --border: rgba(31, 41, 55, 0.9);
-                --success: #10b981;
-            }
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { 
-                background-color: var(--bg); 
-                color: var(--text-main); 
-                min-height: 100vh; 
-                display: flex; 
-                flex-direction: column; 
-                align-items: center; 
-                justify-content: flex-start; 
-                overflow-x: hidden; 
-                position: relative; 
-                padding: 1.5rem 1rem;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            }
-            .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-            
-            /* Cyber Grid Background Effect */
-            .grid-bg { position: fixed; width: 100vw; height: 100vh; background-image: linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px); background-size: 32px 32px; z-index: 0; pointer-events: none; }
-            .glow-orb { position: absolute; width: 600px; height: 600px; background: radial-gradient(circle, var(--accent-glow) 0%, rgba(0,0,0,0) 70%); top: -150px; z-index: 0; pointer-events: none; filter: blur(60px); }
-
-            /* Top Telemetry & Language Bar */
-            .top-telemetry { position: relative; z-index: 2; width: 100%; max-width: 950px; display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 1.2rem; margin-bottom: 2rem; backdrop-filter: blur(12px); font-size: 0.8rem; flex-wrap: wrap; gap: 0.8rem; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-            .telemetry-item { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); }
-            .telemetry-item span { color: var(--text-main); font-weight: bold; }
-            .lang-select { background: #030712; color: #818cf8; border: 1px solid var(--accent); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; cursor: pointer; outline: none; font-weight: bold; }
-
-            .container { position: relative; z-index: 1; max-width: 950px; width: 100%; text-align: center; }
-            .badge { display: inline-block; background: rgba(99, 102, 241, 0.15); border: 1px solid var(--accent); color: #818cf8; padding: 0.4rem 1.2rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 1.5rem; box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); }
-            
-            h1 { font-size: clamp(2.2rem, 4.5vw, 3.5rem); font-weight: 800; line-height: 1.15; margin-bottom: 1.2rem; background: linear-gradient(135deg, #ffffff 30%, #93c5fd 70%, #6366f1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.02em; }
-            p.subtitle { font-size: 1.05rem; color: var(--text-muted); max-width: 720px; margin: 0 auto 2rem; line-height: 1.6; }
-
-            .status-box { background: rgba(0, 0, 0, 0.7); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1.5rem; display: inline-flex; align-items: center; gap: 2rem; margin-bottom: 2rem; font-size: 0.85rem; box-shadow: inset 0 0 15px rgba(0,0,0,0.9); flex-wrap: wrap; justify-content: center; }
-            .status-item { display: flex; align-items: center; gap: 0.6rem; }
-            .dot { width: 9px; height: 9px; background-color: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite; }
-            @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
-            /* Terms Compliance Box */
-            .compliance-box { background: rgba(11, 15, 25, 0.5); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1.25rem; margin: 0 auto 2.5rem; max-width: 750px; display: flex; align-items: flex-start; gap: 0.75rem; text-align: left; backdrop-filter: blur(8px); }
-            .compliance-box input[type="checkbox"] { accent-color: var(--accent); margin-top: 0.2rem; cursor: pointer; }
-            .compliance-box label { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; cursor: pointer; }
-
-            /* Feature Grid */
-            .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; text-align: left; margin-bottom: 3.5rem; }
-            .card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.8rem; backdrop-filter: blur(10px); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
-            .card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0; transition: opacity 0.3s; }
-            .card:hover { transform: translateY(-5px); border-color: var(--accent); box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.3); }
-            .card:hover::before { opacity: 1; }
-            .card h3 { font-size: 1.1rem; color: #fff; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 700; }
-            .card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
-
-            /* Pricing Packages Section */
-            .section-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; color: #fff; letter-spacing: -0.01em; }
-            .section-subtitle { font-size: 0.95rem; color: var(--text-muted); margin-bottom: 2rem; }
-            .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; text-align: left; margin-bottom: 4rem; }
-            .pricing-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 14px; padding: 2rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between; backdrop-filter: blur(12px); position: relative; transition: all 0.3s ease; }
-            .pricing-card.featured { border-color: var(--accent); box-shadow: 0 0 25px rgba(99, 102, 241, 0.25); background: rgba(15, 23, 42, 0.85); }
-            .pricing-card.featured::after { content: 'MOST POPULAR'; position: absolute; top: -12px; right: 20px; background: var(--accent); color: #fff; font-size: 0.65rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 9999px; letter-spacing: 0.1em; }
-            .pricing-card h4 { font-size: 1.2rem; color: #fff; margin-bottom: 0.5rem; }
-            .pricing-card .price { font-size: 2.2rem; font-weight: 800; color: #fff; margin-bottom: 1rem; }
-            .pricing-card .price span { font-size: 0.9rem; color: var(--text-muted); font-weight: 400; }
-            .pricing-features { list-style: none; margin-bottom: 1.8rem; font-size: 0.85rem; color: var(--text-muted); }
-            .pricing-features li { margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
-            .pricing-features li::before { content: '✓'; color: var(--success); font-weight: bold; }
-            
-            .btn { display: inline-block; width: 100%; text-align: center; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--accent); color: #fff; padding: 0.75rem 1rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; text-decoration: none; cursor: pointer; transition: all 0.2s ease; }
-            .btn:hover { background: var(--accent); box-shadow: 0 0 15px rgba(99, 102, 241, 0.5); transform: translateY(-2px); }
-            .btn-primary { background: var(--accent); box-shadow: 0 0 15px rgba(99, 102, 241, 0.3); }
-
-            .footer { margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 1rem; }
-        </style>
-    </head>
-   <!DOCTYPE html>
+HTML_CONTENT = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Protocol | Stealth API & Infrastructure</title>
+    <title>NEXUS PROTOCOL | Stealth API & Decentralized Node Network</title>
+    
+    <!-- Cryptomus Verification Meta-Tags -->
+    <meta name="cryptomus" content="add14096" />
+    <meta name="cryptomus-verification" content="add14096" />
+    
+    <!-- Three.js 3D WebGL Rendering Engine -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
     <style>
         :root {
-            --bg-dark: #05070e;
-            --card-bg: rgba(11, 15, 30, 0.75);
-            --border-color: rgba(99, 102, 241, 0.25);
-            --text-main: #f3f4f6;
-            --text-dim: #9ca3af;
-            --accent: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.4);
+            --bg-dark: #020408;
+            --card-bg: rgba(10, 14, 26, 0.78);
+            --border-glow: rgba(99, 102, 241, 0.35);
+            --border-highlight: #6366f1;
+            --accent-cyan: #38bdf8;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --success: #10b981;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; }
-        body { background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; position: relative; }
+        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; overflow-x: hidden; position: relative; }
+
+        /* Real World Map 3D Canvas Container */
+        #bg-globe { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
+
+        /* Layout Structure */
+        .container { max-width: 1240px; margin: 0 auto; padding: 1.25rem 1rem 4rem; position: relative; z-index: 10; }
+
+        /* Glassmorphism Top Bar */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 14, 26, 0.85);
+            border: 1px solid var(--border-glow);
+            backdrop-filter: blur(16px);
+            padding: 0.85rem 1.5rem;
+            border-radius: 0.85rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .brand-header { display: flex; align-items: center; gap: 0.75rem; }
+        .brand-logo { width: 12px; height: 12px; background: var(--accent-cyan); border-radius: 50%; box-shadow: 0 0 12px var(--accent-cyan); }
+        .brand-name { font-size: 1.1rem; font-weight: 900; letter-spacing: 0.12em; color: #fff; }
+        .brand-name span { color: var(--border-highlight); }
+
+        .telemetry-group { display: flex; align-items: center; gap: 1.25rem; font-size: 0.82rem; font-family: monospace; color: var(--text-dim); flex-wrap: wrap; }
+        .lang-select { background: #060913; color: #818cf8; border: 1px solid var(--border-glow); padding: 0.35rem 0.75rem; border-radius: 0.4rem; outline: none; cursor: pointer; font-size: 0.8rem; }
         
-        /* Realistic Canvas Globe Background */
-        #bg-globe { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; opacity: 0.85; }
+        .clock-badge {
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--accent-cyan);
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.4rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+
+        /* Hero Typography */
+        .hero { text-align: center; padding: 2rem 0.5rem 3rem; }
+        .hero-badge {
+            display: inline-block;
+            padding: 0.35rem 1rem;
+            border-radius: 9999px;
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid var(--border-glow);
+            color: #818cf8;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.25rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 5.5vw, 3.8rem);
+            font-weight: 900;
+            line-height: 1.15;
+            background: linear-gradient(135deg, #ffffff 30%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.25rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p { color: var(--text-dim); max-width: 720px; margin: 0 auto; line-height: 1.65; font-size: 1rem; }
+
+        /* Pricing Card Grid */
+        .section-title { text-align: center; font-size: 2rem; font-weight: 800; margin-top: 2rem; }
+        .section-subtitle { text-align: center; color: var(--text-dim); margin-bottom: 3rem; font-size: 0.95rem; margin-top: 0.35rem; }
+
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.75rem; }
         
-        .container { max-width: 1200px; margin: 0 auto; padding: 1rem 1rem 3rem; position: relative; z-index: 1; }
-        
-        /* Top Telemetry Header Bar */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(13, 17, 38, 0.85); border: 1px solid var(--border-color); backdrop-filter: blur(8px); padding: 0.6rem 1.2rem; border-radius: 0.75rem; margin-bottom: 2rem; font-size: 0.85rem; font-family: monospace; color: var(--text-dim); }
-        .lang-select { background: #0b0f1e; color: #818cf8; border: 1px solid var(--border-color); padding: 0.25rem 0.5rem; border-radius: 0.375rem; outline: none; cursor: pointer; }
-        .clock-badge { color: #818cf8; font-weight: 600; }
-        
-        .hero { text-align: center; padding: 3rem 1rem 2rem; }
-        .hero h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #fff 30%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; }
-        .hero p { color: var(--text-dim); max-width: 650px; margin: 0 auto 2rem; line-height: 1.6; }
-        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--border-color); color: #818cf8; font-size: 0.85rem; margin-bottom: 1rem; font-weight: 600; letter-spacing: 0.05em; }
-        
-        .section-title { text-align: center; font-size: 2rem; margin: 4rem 0 0.5rem; }
-        .section-subtitle { text-align: center; color: var(--text-dim); margin-bottom: 2.5rem; font-size: 0.95rem; }
-        
-        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: blur(12px); border-radius: 1rem; padding: 2rem; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
-        .card.popular { border-color: var(--accent); box-shadow: 0 0 25px var(--accent-glow); }
-        .badge-popular { position: absolute; top: -12px; right: 20px; background: var(--accent); color: #fff; padding: 0.2rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; }
-        .price-tag { font-size: 2.5rem; font-weight: 800; margin: 1rem 0 0.25rem; color: #fff; }
-        .credits-val { color: #818cf8; font-weight: 600; margin-bottom: 1.25rem; font-size: 0.95rem; }
-        .btn-buy { width: 100%; padding: 0.85rem; border-radius: 0.5rem; border: none; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .btn-buy:hover { background: #4f46e5; box-shadow: 0 0 15px var(--accent-glow); }
-        
-        footer { text-align: center; color: var(--text-dim); padding: 3rem 0 1rem; font-size: 0.85rem; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 4rem; font-family: monospace; }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-glow);
+            backdrop-filter: blur(20px);
+            border-radius: 1.25rem;
+            padding: 2.25rem 2rem;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+
+        .card:hover { transform: translateY(-6px); border-color: var(--border-highlight); }
+        .card.popular { border-color: var(--border-highlight); box-shadow: 0 0 35px rgba(99, 102, 241, 0.25); }
+
+        .popular-tag {
+            position: absolute;
+            top: -14px;
+            right: 24px;
+            background: var(--border-highlight);
+            color: #fff;
+            padding: 0.3rem 0.9rem;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5);
+        }
+
+        .tier-name { font-size: 1.25rem; font-weight: 800; color: #fff; }
+        .price-tag { font-size: 3rem; font-weight: 900; color: #fff; margin: 0.75rem 0 0.2rem; }
+        .price-tag span { font-size: 1rem; font-weight: 500; color: var(--text-dim); }
+        .credits-val { color: var(--accent-cyan); font-weight: 700; font-size: 0.95rem; margin-bottom: 1.25rem; }
+        .tier-desc { color: var(--text-dim); font-size: 0.88rem; line-height: 1.55; margin-bottom: 2rem; }
+
+        /* Ultra Premium Legal Consent Component */
+        .legal-box {
+            background: rgba(6, 9, 19, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0.85rem 1rem;
+            border-radius: 0.6rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            text-align: left;
+        }
+
+        .legal-box input[type="checkbox"] { accent-color: var(--border-highlight); width: 16px; height: 16px; margin-top: 2px; cursor: pointer; }
+        .legal-box label { font-size: 0.76rem; color: var(--text-dim); line-height: 1.4; cursor: pointer; }
+        .legal-box label a { color: var(--accent-cyan); text-decoration: none; }
+
+        .btn-buy {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 0.6rem;
+            border: none;
+            background: var(--border-highlight);
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            letter-spacing: 0.03em;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-buy:hover { background: #4f46e5; box-shadow: 0 0 25px rgba(99, 102, 241, 0.6); }
+
+        footer {
+            text-align: center;
+            color: var(--text-dim);
+            padding: 3.5rem 0 1.5rem;
+            font-size: 0.82rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            margin-top: 5rem;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
 
-    <!-- 3D Realistic Globe Canvas -->
-    <canvas id="bg-globe"></canvas>
+    <div id="bg-globe"></div>
 
     <div class="container">
-        <!-- Top Telemetry Header -->
+        <!-- Top Telemetry Header Bar -->
         <div class="top-bar">
-            <div>
-                🌐 <select class="lang-select" id="langSelect">
-                    <option value="en">ENGLISH (GLOBAL)</option>
-                    <option value="es">ESPAÑOL</option>
-                    <option value="zh">中文 (CHINESE)</option>
-                    <option value="ja">JAPANESE</option>
-                    <option value="de">DEUTSCH</option>
-                </select>
-                <span style="margin-left: 10px;">⚡ PING: <span style="color: #10b981;">12ms</span></span>
+            <div class="brand-header">
+                <div class="brand-logo"></div>
+                <div class="brand-name">NEXUS <span>PROTOCOL</span></div>
             </div>
-            <div>
-                🕒 UTC TIME: <span class="clock-badge" id="utcClock">2026-00-00 00:00:00 UTC</span>
+            <div class="telemetry-group">
+                <div>
+                    🌐 <select class="lang-select" id="langSelect">
+                        <option value="en">ENGLISH (GLOBAL)</option>
+                        <option value="es">ESPAÑOL</option>
+                        <option value="zh">中文 (CHINESE)</option>
+                        <option value="ja">JAPANESE</option>
+                        <option value="de">DEUTSCH</option>
+                    </select>
+                </div>
+                <div>⚡ PING: <span style="color: var(--success); font-weight: 700;">12ms</span></div>
+                <div class="clock-badge" id="utcClock">2026-08-29 00:00:00 UTC</div>
             </div>
         </div>
 
+        <!-- Hero Title Section -->
         <div class="hero">
-            <span class="badge">NEXUS V6.3 ENTERPRISE EDITION</span>
+            <span class="hero-badge">NEXUS V6.3 ENTERPRISE EDITION</span>
             <h1>Autonomous Stealth Extraction & Anti-Bot Infrastructure</h1>
             <p>Next-generation distributed high-performance API protocol utilizing low-level TLS fingerprint emulation, residential routing networks, and automated Cryptomus ledger verification.</p>
         </div>
@@ -213,50 +262,69 @@ async def serve_landing_page():
         <h2 class="section-title">Deployment Packages</h2>
         <p class="section-subtitle">Select an infrastructure tier tailored to your API execution frequency.</p>
 
+        <!-- Pricing Grid -->
         <div class="pricing-grid">
             <!-- $1 Tier -->
             <div class="card">
                 <div>
-                    <h3>Flash Pack</h3>
-                    <div class="price-tag">$1</div>
+                    <div class="tier-name">Flash Pack</div>
+                    <div class="price-tag">$1 <span>/ checkout</span></div>
                     <div class="credits-val">5,000 API Credits</div>
-                    <p style="color: var(--text-dim); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.5rem;">Ideal for rapid test deployments and basic TLS endpoint verification.</p>
+                    <p class="tier-desc">Ideal for rapid test deployments and basic TLS endpoint verification.</p>
                 </div>
-                <button class="btn-buy" onclick="initiateCheckout(1)">Deploy Tier</button>
+                <div>
+                    <div class="legal-box">
+                        <input type="checkbox" id="terms-1">
+                        <label for="terms-1">I agree to the <a href="#">Terms of Service</a> & non-refundable API allocation policy.</label>
+                    </div>
+                    <button class="btn-buy" onclick="initiateCheckout(1, 'terms-1')">Deploy Tier</button>
+                </div>
             </div>
 
             <!-- $10 Tier -->
             <div class="card popular">
-                <div class="badge-popular">MOST POPULAR</div>
+                <div class="popular-tag">MOST POPULAR</div>
                 <div>
-                    <h3>Developer Pro</h3>
-                    <div class="price-tag">$10</div>
+                    <div class="tier-name">Developer Pro</div>
+                    <div class="price-tag">$10 <span>/ checkout</span></div>
                     <div class="credits-val">55,000 API Credits</div>
-                    <p style="color: var(--text-dim); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.5rem;">Production-ready stealth pipeline with standard SLA routing.</p>
+                    <p class="tier-desc">Production-ready stealth pipeline with standard SLA routing.</p>
                 </div>
-                <button class="btn-buy" onclick="initiateCheckout(10)">Deploy Tier</button>
+                <div>
+                    <div class="legal-box">
+                        <input type="checkbox" id="terms-10">
+                        <label for="terms-10">I agree to the <a href="#">Terms of Service</a> & non-refundable API allocation policy.</label>
+                    </div>
+                    <button class="btn-buy" onclick="initiateCheckout(10, 'terms-10')">Deploy Tier</button>
+                </div>
             </div>
 
             <!-- $29 Tier -->
             <div class="card">
                 <div>
-                    <h3>Agency Scale</h3>
-                    <div class="price-tag">$29</div>
+                    <div class="tier-name">Agency Scale</div>
+                    <div class="price-tag">$29 <span>/ checkout</span></div>
                     <div class="credits-val">100,000 API Credits</div>
-                    <p style="color: var(--text-dim); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.5rem;">High-throughput capacity designed for enterprise scraping workloads.</p>
+                    <p class="tier-desc">High-throughput capacity designed for enterprise scraping workloads.</p>
                 </div>
-                <button class="btn-buy" onclick="initiateCheckout(29)">Deploy Tier</button>
+                <div>
+                    <div class="legal-box">
+                        <input type="checkbox" id="terms-29">
+                        <label for="terms-29">I agree to the <a href="#">Terms of Service</a> & non-refundable API allocation policy.</label>
+                    </div>
+                    <button class="btn-buy" onclick="initiateCheckout(29, 'terms-29')">Deploy Tier</button>
+                </div>
             </div>
         </div>
 
         <footer>
-            &copy; 2026 Nexus Protocol. All infrastructure nodes secure.<br>
+            &copy; 2026 NEXUS PROTOCOL. All infrastructure nodes secure.<br>
             <span style="color: #818cf8; font-size: 0.75rem; margin-top: 0.5rem; display: inline-block;">SECURE ENCLAVE ACTIVE</span>
         </footer>
     </div>
 
 <script>
-    // Live UTC Timezone Clock Engine
+    // Live UTC Clock Engine
     function updateUTCClock() {
         const now = new Date();
         const year = now.getUTCFullYear();
@@ -270,103 +338,105 @@ async def serve_landing_page():
     setInterval(updateUTCClock, 1000);
     updateUTCClock();
 
-    // High-Precision Photorealistic Photons Globe Renderer
-    (function initTrueEarthGlobe() {
-        const canvas = document.getElementById('bg-globe');
+    // Photorealistic Real World Map 3D Globe Engine
+    (function init3DRealWorldGlobe() {
+        const container = document.getElementById('bg-globe');
+        const scene = new THREE.Scene();
+        
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 210;
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        container.appendChild(renderer.domElement);
+
+        const globeGroup = new THREE.Group();
+        scene.add(globeGroup);
+
+        // Procedural Real World Map Texture Generator
+        const canvas = document.createElement('canvas');
+        canvas.width = 2048;
+        canvas.height = 1024;
         const ctx = canvas.getContext('2d');
+
+        // Deep Ocean Base Layer
+        ctx.fillStyle = '#020408';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Render Real World Landmass Cartography
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.src = "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg";
         
-        let width, height, radius, rotation = 0;
-        
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            radius = Math.min(width, height) * 0.38;
-        }
-        window.addEventListener('resize', resize);
-        resize();
+        img.onload = () => {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imgData.data;
 
-        // High-Density World Map Coordinate Vertices (Lat/Long Data Points)
-        const landPoints = [];
-        const continents = [
-            // North America
-            { lat: [25, 70], lon: [-160, -60], density: 420 },
-            // South America
-            { lat: [-55, 12], lon: [-80, -35], density: 320 },
-            // Europe
-            { lat: [35, 70], lon: [-10, 40], density: 380 },
-            // Africa
-            { lat: [-35, 37], lon: [-18, 50], density: 450 },
-            // Asia & Middle East
-            { lat: [10, 75], lon: [40, 180], density: 680 },
-            // Australia
-            { lat: [-42, -10], lon: [110, 155], density: 250 }
-        ];
+            // Convert Landmass to Ultra-Premium Neon Grid Overlay
+            ctx.fillStyle = '#020408';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        continents.forEach(c => {
-            for (let i = 0; i < c.density; i++) {
-                const lat = c.lat[0] + Math.random() * (c.lat[1] - c.lat[0]);
-                const lon = c.lon[0] + Math.random() * (c.lon[1] - c.lon[0]);
-                landPoints.push({
-                    phi: (90 - lat) * (Math.PI / 180),
-                    theta: (lon + 180) * (Math.PI / 180)
-                });
-            }
-        });
-
-        // Add 1200 Global Grid Fillers
-        for (let i = 0; i < 1200; i++) {
-            landPoints.push({
-                phi: Math.acos(2 * Math.random() - 1),
-                theta: 2 * Math.PI * Math.random()
-            });
-        }
-
-        function render() {
-            ctx.clearRect(0, 0, width, height);
-            
-            const cx = width / 2;
-            const cy = height / 2;
-            rotation += 0.003;
-
-            // Draw Outer Atmospheric Glow
-            const glowGradient = ctx.createRadialGradient(cx, cy, radius * 0.85, cx, cy, radius * 1.15);
-            glowGradient.addColorStop(0, 'rgba(99, 102, 241, 0.15)');
-            glowGradient.addColorStop(0.5, 'rgba(99, 102, 241, 0.05)');
-            glowGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-            
-            ctx.fillStyle = glowGradient;
-            ctx.beginPath();
-            ctx.arc(cx, cy, radius * 1.2, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Render Rotating Sphere Coordinates
-            for (let i = 0; i < landPoints.length; i++) {
-                const pt = landPoints[i];
-                const currentTheta = pt.theta + rotation;
-
-                const x = radius * Math.sin(pt.phi) * Math.cos(currentTheta);
-                const y = radius * Math.cos(pt.phi);
-                const z = radius * Math.sin(pt.phi) * Math.sin(currentTheta);
-
-                // Render front hemisphere only (3D depth culling)
-                if (z > 0) {
-                    const alpha = Math.min(1, (z / radius) * 1.2);
-                    const size = 1.2 + (z / radius) * 1.1;
-
-                    ctx.fillStyle = `rgba(129, 140, 248, ${alpha})`;
-                    ctx.beginPath();
-                    ctx.arc(cx + x, cy + y, size, 0, Math.PI * 2);
-                    ctx.fill();
+            const dots = [];
+            const step = 8;
+            for (let y = 0; y < canvas.height; y += step) {
+                for (let x = 0; x < canvas.width; x += step) {
+                    const index = (y * canvas.width + x) * 4;
+                    const brightness = (data[index] + data[index + 1] + data[index + 2]) / 3;
+                    if (brightness > 35) { // Land detection threshold
+                        ctx.fillStyle = '#6366f1';
+                        ctx.beginPath();
+                        ctx.arc(x, y, 1.8, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
                 }
             }
 
-            requestAnimationFrame(render);
-        }
+            // Create Globe Texture Mesh
+            const texture = new THREE.CanvasTexture(canvas);
+            const sphereGeo = new THREE.SphereGeometry(60, 64, 64);
+            const sphereMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.95 });
+            const realWorldGlobe = new THREE.Mesh(sphereGeo, sphereMat);
+            globeGroup.add(realWorldGlobe);
+        };
 
-        render();
+        // Fallback Base Sphere Grid (Immediate Rendering)
+        const innerGeo = new THREE.SphereGeometry(59.5, 36, 36);
+        const innerMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.08 });
+        const innerMesh = new THREE.Mesh(innerGeo, innerMat);
+        globeGroup.add(innerMesh);
+
+        // Outer Atmosphere Glow Halo Ring
+        const ringGeo = new THREE.RingGeometry(72, 72.5, 64);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x6366f1, side: THREE.DoubleSide, transparent: true, opacity: 0.25 });
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.rotation.x = Math.PI / 2.3;
+        globeGroup.add(ringMesh);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            globeGroup.rotation.y += 0.0018;
+            globeGroup.rotation.x = 0.12;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     })();
 
-    async function initiateCheckout(amount) {
+    // Cryptomus Integration & Legal Check Validation
+    async function initiateCheckout(amount, checkboxId) {
+        const checkbox = document.getElementById(checkboxId);
+        if (!checkbox || !checkbox.checked) {
+            alert('Please accept the Terms of Service before deploying.');
+            return;
+        }
+
         try {
             const response = await fetch('/create-checkout', {
                 method: 'POST',
@@ -376,19 +446,22 @@ async def serve_landing_page():
             const data = await response.json();
             if (data.checkout_url) {
                 window.location.href = data.checkout_url;
+            } else {
+                alert('Checkout initialization failed. Please try again.');
             }
         } catch (err) {
-            console.log('Checkout init error:', err);
+            console.error('Checkout error:', err);
+            alert('Unable to connect to Cryptomus payment engine.');
         }
     }
 </script>
 </body>
-<html>
-"""
+</html>"""
 
 @app.get("/", response_class=HTMLResponse)
 async def serve_landing_page():
     return HTML_CONTENT
+                 
        
 # --- SECURITY HEADERS & CORS MIDDLEWARE ---
 app.add_middleware(
