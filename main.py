@@ -34,12 +34,6 @@ app = FastAPI(
     docs_url=None,
     redoc_url=None
 )
-
-app = FastAPI(title="Nexus Protocol")
-
-@app.get("/", response_class=HTMLResponse)
-async def serve_landing_page():
-    return """
 HTML_CONTENT = """<!DOCTYPE html>
 <html lang="en">
 <head>
