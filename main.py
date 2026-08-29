@@ -132,89 +132,203 @@ async def serve_landing_page():
             .footer { margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 1rem; }
         </style>
     </head>
-    <body>
-        <div class="grid-bg"></div>
-        <div class="glow-orb"></div>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Protocol | Stealth API & Infrastructure</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #070913;
+            --card-bg: rgba(13, 17, 38, 0.7);
+            --border-color: rgba(99, 102, 241, 0.2);
+            --text-main: #f3f4f6;
+            --text-dim: #9ca3af;
+            --accent: #6366f1;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; }
+        body { background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; position: relative; }
+        #bg-globe { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; position: relative; z-index: 1; }
+        .hero { text-align: center; padding: 4rem 1rem 2rem; }
+        .hero h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #fff 30%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; }
+        .hero p { color: var(--text-dim); max-width: 600px; margin: 0 auto 2rem; line-height: 1.6; }
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--border-color); color: #818cf8; font-size: 0.875rem; margin-bottom: 1rem; }
+        .section-title { text-align: center; font-size: 2rem; margin: 4rem 0 1rem; }
+        .section-subtitle { text-align: center; color: var(--text-dim); margin-bottom: 3rem; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: blur(12px); border-radius: 1rem; padding: 2rem; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
+        .card.popular { border-color: var(--accent); box-shadow: 0 0 25px var(--accent-glow); }
+        .badge-popular { position: absolute; top: -12px; right: 20px; background: var(--accent); color: #fff; padding: 0.2rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; }
+        .price-tag { font-size: 2.5rem; font-weight: 800; margin: 1rem 0 0.5rem; }
+        .credits-val { color: #818cf8; font-weight: 600; margin-bottom: 1.5rem; }
+        .btn-buy { width: 100%; padding: 0.85rem; border-radius: 0.5rem; border: none; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+        .btn-buy:hover { background: #4f46e5; }
+        footer { text-align: center; color: var(--text-dim); padding: 3rem 0 1rem; font-size: 0.875rem; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 4rem; }
+    </style>
+</head>
+<body>
 
-        <!-- Top Telemetry Bar -->
-        <div class="top-telemetry mono">
-            <div class="telemetry-item">🌐 
-                <select class="lang-select" id="langSelect">
-                    <option value="en">ENGLISH (GLOBAL)</option>
-                    <option value="es">ESPAÑOL</option>
-                    <option value="zh">中文 (CHINESE)</option>
-                    <option value="ja">日本語 (JAPANESE)</option>
-                    <option value="de">DEUTSCH</option>
-                    <option value="fr">FRANÇAIS</option>
-                </select>
-            </div>
-            <div class="telemetry-item">⚡ PING: <span style="color: var(--success);">12ms</span></div>
-            <div class="telemetry-item">🕒 UTC TIME: <span id="utcClock" style="color: #818cf8;">00:00:00 UTC</span></div>
-        </div>
+    <canvas id="bg-globe"></canvas>
 
-        <div class="container">
-            <div class="badge mono">Nexus v6.3 Enterprise Edition</div>
+    <div class="container">
+        <div class="hero">
+            <span class="badge">NEXUS V6.3 ENTERPRISE EDITION</span>
             <h1>Autonomous Stealth Extraction & Anti-Bot Infrastructure</h1>
-            <p class="subtitle">Next-generation distributed high-performance API protocol utilizing low-level TLS fingerprint emulation, residential routing networks, and automated Cryptomus ledger verification.</p>
-            
-            <div class="status-box mono">
-                <div class="status-item"><span class="dot"></span> <strong>CORE ENGINE:</strong> <span style="color: var(--success);">ONLINE</span></div>
-                <div class="status-item" style="color: var(--text-muted);">PROTOCOL: <span style="color: #fff;">TLS_ASYNC_v6.3</span></div>
-                <div class="status-item" style="color: var(--text-muted);">ENCRYPTION: <span style="color: #fff;">HMAC-SHA256</span></div>
+            <p>Next-generation distributed high-performance API protocol utilizing low-level TLS fingerprint emulation, residential routing networks, and automated Cryptomus ledger verification.</p>
+        </div>
+
+        <h2 class="section-title">Deployment Packages</h2>
+        <p class="section-subtitle">Select an infrastructure tier tailored to your API execution frequency.</p>
+
+        <div class="pricing-grid">
+            <!-- $1 Tier -->
+            <div class="card">
+                <h3>Flash Pack</h3>
+                <div class="price-tag">$1</div>
+                <div class="credits-val">5,000 API Credits</div>
+                <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1.5rem;">Ideal for rapid test deployments and basic TLS endpoint verification.</p>
+                <button class="btn-buy" onclick="initiateCheckout(1)">Deploy Tier</button>
             </div>
 
-            <!-- Compliance Box -->
-            <div class="compliance-box mono">
-                <input type="checkbox" id="termsAck" checked disabled />
-                <label for="termsAck">
-                    <strong>Operational Compliance Notice:</strong> Nexus Protocol provides a lawful, high-performance software infrastructure framework. Utilization of this software, routing pipelines, and data acquisition tools remains strictly at the sole discretion and legal responsibility of the end user, who assumes total liability for adherence to applicable jurisdictional regulations.
-                </label>
+            <!-- $10 Tier -->
+            <div class="card popular">
+                <div class="badge-popular">MOST POPULAR</div>
+                <h3>Developer Pro</h3>
+                <div class="price-tag">$10</div>
+                <div class="credits-val">55,000 API Credits</div>
+                <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1.5rem;">Production-ready stealth pipeline with standard SLA routing.</p>
+                <button class="btn-buy" onclick="initiateCheckout(10)">Deploy Tier</button>
             </div>
 
-            <!-- Core Features -->
-            <div class="grid">
-                <div class="card">
-                    <h3>🛡️ Stealth Pipeline</h3>
-                    <p>Proprietary TLS fingerprint randomization delivering zero-friction data delivery across all edge targets.</p>
-                </div>
-                <div class="card">
-                    <h3>⚡ High-Velocity Engine</h3>
-                    <p>Ultra-low latency extraction architecture optimized for sub-second global response times.</p>
-                </div>
-                <div class="card">
-                    <h3>💳 Automated Ledger</h3>
-                    <p>Instant cryptographic settlement layer with secure, automated verification.</p>
-                </div>
-            </div>
-
-            <!-- Packages / Pricing Section -->
-            <h2 class="section-title">Deployment Packages</h2>
-            <p class="section-subtitle">Select an infrastructure tier tailored to your API execution frequency.</p>
-            
-            <div class="pricing-grid">
-
-
-            <div class="footer mono">
-                <div>&copy; 2026 Nexus Protocol. All infrastructure nodes secure.</div>
-                <div style="color: #818cf8; font-weight: bold;">SECURE ENCLAVE ACTIVE</div>
+            <!-- $29 Tier -->
+            <div class="card">
+                <h3>Agency Scale</h3>
+                <div class="price-tag">$29</div>
+                <div class="credits-val">100,000 API Credits</div>
+                <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1.5rem;">High-throughput capacity designed for enterprise scraping workloads.</p>
+                <button class="btn-buy" onclick="initiateCheckout(29)">Deploy Tier</button>
             </div>
         </div>
 
-        <script>
-            function updateClock() {
-                const now = new Date();
-                const utcString = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-                const clockEl = document.getElementById('utcClock');
-                if (clockEl.innerText !== utcString) {
-                    clockEl.innerText = utcString;
-                }
+        <footer>
+            &copy; 2026 Nexus Protocol. All infrastructure nodes secure.<br>
+            <span style="color: #818cf8; font-size: 0.75rem; margin-top: 0.5rem; display: inline-block;">SECURE ENCLAVE ACTIVE</span>
+        </footer>
+    </div>
+
+<script>
+    (function initFuturisticGlobe() {
+        const canvas = document.getElementById('bg-globe');
+        if (!canvas) return;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 220;
+
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        const particleCount = 2800;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const radius = 95;
+
+        for (let i = 0; i < particleCount; i++) {
+            const phi = Math.acos(-1 + (2 * i) / particleCount);
+            const theta = Math.sqrt(particleCount * Math.PI) * phi;
+
+            positions[i * 3] = radius * Math.cos(theta) * Math.sin(phi);
+            positions[i * 3 + 1] = radius * Math.sin(theta) * Math.sin(phi);
+            positions[i * 3 + 2] = radius * Math.cos(phi);
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x6366f1,
+            size: 1.25,
+            transparent: true,
+            opacity: 0.85
+        });
+
+        const globeParticles = new THREE.Points(geometry, material);
+        scene.add(globeParticles);
+
+        const wireframeGeo = new THREE.IcosahedronGeometry(94, 3);
+        const wireframeMat = new THREE.MeshBasicMaterial({
+            color: 0x4f46e5,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.15
+        });
+        const wireframeMesh = new THREE.Mesh(wireframeGeo, wireframeMat);
+        scene.add(wireframeMesh);
+
+        const ringGeo = new THREE.RingGeometry(115, 116, 64);
+        const ringMat = new THREE.MeshBasicMaterial({
+            color: 0x818cf8,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.3
+        });
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.rotation.x = Math.PI / 3;
+        scene.add(ringMesh);
+
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.0003;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.0003;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            globeParticles.rotation.y += 0.0015;
+            wireframeMesh.rotation.y += 0.0015;
+            ringMesh.rotation.z -= 0.0005;
+
+            globeParticles.rotation.x += (mouseY - globeParticles.rotation.x) * 0.05;
+            globeParticles.rotation.y += (mouseX - globeParticles.rotation.y) * 0.05;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    })();
+
+    async function initiateCheckout(amount) {
+        try {
+            const response = await fetch('/create-checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: amount })
+            });
+            const data = await response.json();
+            if (data.checkout_url) {
+                window.location.href = data.checkout_url;
             }
-            setInterval(updateClock, 1000);
-            updateClock();
-        </script>
-    </body>
-    </html>
-    """
+        } catch (err) {
+            console.log('Checkout init error:', err);
+        }
+    }
+</script>
+
+</body>
+</html>
+"""
+    
 
 async def serve_landing_page():
     return """
