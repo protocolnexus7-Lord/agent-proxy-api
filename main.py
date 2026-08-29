@@ -272,6 +272,8 @@ async def serve_landing_page():
         <title>NEXUS PROTOCOL — Autonomous Stealth Extraction Engine</title>
         <meta name="cryptomus" content="add14096-ff52-49d1-b188-a538aa30dd74" />
         <meta name="cryptomus-verification" content="add14096" />
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
         <style>
             :root {
                 --bg: #02040a;
@@ -322,10 +324,20 @@ async def serve_landing_page():
             .card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
 
             .footer { margin-top: 4rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 1rem; }
+        #bg-globe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.35;
+}
         </style>
     </head>
     <body>
-
+<canvas id="bg-globe"></canvas>
     
     
 # --- SECURITY HEADERS & CORS MIDDLEWARE ---
@@ -686,6 +698,93 @@ def health_check():
     </div>
 
     <script>
+       (function initFuturisticGlobe() {
+    const canvas = document.getElementById('bg-globe');
+    if (!canvas) return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 220;
+
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const particleCount = 2800;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const radius = 95;
+
+    for (let i = 0; i < particleCount; i++) {
+        const phi = Math.acos(-1 + (2 * i) / particleCount);
+        const theta = Math.sqrt(particleCount * Math.PI) * phi;
+
+        positions[i * 3] = radius * Math.cos(theta) * Math.sin(phi);
+        positions[i * 3 + 1] = radius * Math.sin(theta) * Math.sin(phi);
+        positions[i * 3 + 2] = radius * Math.cos(phi);
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+    const material = new THREE.PointsMaterial({
+        color: 0x6366f1,
+        size: 1.25,
+        transparent: true,
+        opacity: 0.85
+    });
+
+    const globeParticles = new THREE.Points(geometry, material);
+    scene.add(globeParticles);
+
+    const wireframeGeo = new THREE.IcosahedronGeometry(94, 3);
+    const wireframeMat = new THREE.MeshBasicMaterial({
+        color: 0x4f46e5,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.15
+    });
+    const wireframeMesh = new THREE.Mesh(wireframeGeo, wireframeMat);
+    scene.add(wireframeMesh);
+
+    const ringGeo = new THREE.RingGeometry(115, 116, 64);
+    const ringMat = new THREE.MeshBasicMaterial({
+        color: 0x818cf8,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.3
+    });
+    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+    ringMesh.rotation.x = Math.PI / 3;
+    scene.add(ringMesh);
+
+    let mouseX = 0, mouseY = 0;
+    window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX - window.innerWidth / 2) * 0.0003;
+        mouseY = (e.clientY - window.innerHeight / 2) * 0.0003;
+    });
+
+    function animate() {
+        requestAnimationFrame(animate);
+
+        globeParticles.rotation.y += 0.0015;
+        wireframeMesh.rotation.y += 0.0015;
+        ringMesh.rotation.z -= 0.0005;
+
+        globeParticles.rotation.x += (mouseY - globeParticles.rotation.x) * 0.05;
+        globeParticles.rotation.y += (mouseX - globeParticles.rotation.y) * 0.05;
+
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+})();
+
         async function initiateCheckout(amountVal, planId) {
             alert('Initializing Cryptomus payment node for $' + amountVal + ' USD...');
             try {
