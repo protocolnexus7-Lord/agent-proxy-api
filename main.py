@@ -132,18 +132,17 @@ async def serve_landing_page():
             .footer { margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 1rem; }
         </style>
     </head>
-    <!DOCTYPE html>
+   <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus Protocol | Stealth API & Infrastructure</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root {
-            --bg-dark: #070913;
-            --card-bg: rgba(13, 17, 38, 0.7);
-            --border-color: rgba(99, 102, 241, 0.2);
+            --bg-dark: #05070e;
+            --card-bg: rgba(11, 15, 30, 0.75);
+            --border-color: rgba(99, 102, 241, 0.25);
             --text-main: #f3f4f6;
             --text-dim: #9ca3af;
             --accent: #6366f1;
@@ -151,30 +150,60 @@ async def serve_landing_page():
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace; }
         body { background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; position: relative; }
-        #bg-globe { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; position: relative; z-index: 1; }
-        .hero { text-align: center; padding: 4rem 1rem 2rem; }
+        
+        /* Realistic Canvas Globe Background */
+        #bg-globe { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; opacity: 0.85; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 1rem 1rem 3rem; position: relative; z-index: 1; }
+        
+        /* Top Telemetry Header Bar */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; background: rgba(13, 17, 38, 0.85); border: 1px solid var(--border-color); backdrop-filter: blur(8px); padding: 0.6rem 1.2rem; border-radius: 0.75rem; margin-bottom: 2rem; font-size: 0.85rem; font-family: monospace; color: var(--text-dim); }
+        .lang-select { background: #0b0f1e; color: #818cf8; border: 1px solid var(--border-color); padding: 0.25rem 0.5rem; border-radius: 0.375rem; outline: none; cursor: pointer; }
+        .clock-badge { color: #818cf8; font-weight: 600; }
+        
+        .hero { text-align: center; padding: 3rem 1rem 2rem; }
         .hero h1 { font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #fff 30%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 1rem; }
-        .hero p { color: var(--text-dim); max-width: 600px; margin: 0 auto 2rem; line-height: 1.6; }
-        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--border-color); color: #818cf8; font-size: 0.875rem; margin-bottom: 1rem; }
-        .section-title { text-align: center; font-size: 2rem; margin: 4rem 0 1rem; }
-        .section-subtitle { text-align: center; color: var(--text-dim); margin-bottom: 3rem; }
-        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .hero p { color: var(--text-dim); max-width: 650px; margin: 0 auto 2rem; line-height: 1.6; }
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 9999px; background: rgba(99, 102, 241, 0.1); border: 1px solid var(--border-color); color: #818cf8; font-size: 0.85rem; margin-bottom: 1rem; font-weight: 600; letter-spacing: 0.05em; }
+        
+        .section-title { text-align: center; font-size: 2rem; margin: 4rem 0 0.5rem; }
+        .section-subtitle { text-align: center; color: var(--text-dim); margin-bottom: 2.5rem; font-size: 0.95rem; }
+        
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
         .card { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: blur(12px); border-radius: 1rem; padding: 2rem; position: relative; display: flex; flex-direction: column; justify-content: space-between; }
         .card.popular { border-color: var(--accent); box-shadow: 0 0 25px var(--accent-glow); }
         .badge-popular { position: absolute; top: -12px; right: 20px; background: var(--accent); color: #fff; padding: 0.2rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; }
-        .price-tag { font-size: 2.5rem; font-weight: 800; margin: 1rem 0 0.5rem; }
-        .credits-val { color: #818cf8; font-weight: 600; margin-bottom: 1.5rem; }
-        .btn-buy { width: 100%; padding: 0.85rem; border-radius: 0.5rem; border: none; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-        .btn-buy:hover { background: #4f46e5; }
-        footer { text-align: center; color: var(--text-dim); padding: 3rem 0 1rem; font-size: 0.875rem; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 4rem; }
+        .price-tag { font-size: 2.5rem; font-weight: 800; margin: 1rem 0 0.25rem; color: #fff; }
+        .credits-val { color: #818cf8; font-weight: 600; margin-bottom: 1.25rem; font-size: 0.95rem; }
+        .btn-buy { width: 100%; padding: 0.85rem; border-radius: 0.5rem; border: none; background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-buy:hover { background: #4f46e5; box-shadow: 0 0 15px var(--accent-glow); }
+        
+        footer { text-align: center; color: var(--text-dim); padding: 3rem 0 1rem; font-size: 0.85rem; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 4rem; font-family: monospace; }
     </style>
 </head>
 <body>
 
+    <!-- 3D Realistic Globe Canvas -->
     <canvas id="bg-globe"></canvas>
 
     <div class="container">
+        <!-- Top Telemetry Header -->
+        <div class="top-bar">
+            <div>
+                🌐 <select class="lang-select" id="langSelect">
+                    <option value="en">ENGLISH (GLOBAL)</option>
+                    <option value="es">ESPAÑOL</option>
+                    <option value="zh">中文 (CHINESE)</option>
+                    <option value="ja">JAPANESE</option>
+                    <option value="de">DEUTSCH</option>
+                </select>
+                <span style="margin-left: 10px;">⚡ PING: <span style="color: #10b981;">12ms</span></span>
+            </div>
+            <div>
+                🕒 UTC TIME: <span class="clock-badge" id="utcClock">2026-00-00 00:00:00 UTC</span>
+            </div>
+        </div>
+
         <div class="hero">
             <span class="badge">NEXUS V6.3 ENTERPRISE EDITION</span>
             <h1>Autonomous Stealth Extraction & Anti-Bot Infrastructure</h1>
@@ -187,29 +216,35 @@ async def serve_landing_page():
         <div class="pricing-grid">
             <!-- $1 Tier -->
             <div class="card">
-                <h3>Flash Pack</h3>
-                <div class="price-tag">$1</div>
-                <div class="credits-val">5,000 API Credits</div>
-                <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1.5rem;">Ideal for rapid test deployments and basic TLS endpoint verification.</p>
+                <div>
+                    <h3>Flash Pack</h3>
+                    <div class="price-tag">$1</div>
+                    <div class="credits-val">5,000 API Credits</div>
+                    <p style="color: var(--text-dim); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.5rem;">Ideal for rapid test deployments and basic TLS endpoint verification.</p>
+                </div>
                 <button class="btn-buy" onclick="initiateCheckout(1)">Deploy Tier</button>
             </div>
 
             <!-- $10 Tier -->
             <div class="card popular">
                 <div class="badge-popular">MOST POPULAR</div>
-                <h3>Developer Pro</h3>
-                <div class="price-tag">$10</div>
-                <div class="credits-val">55,000 API Credits</div>
-                <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1.5rem;">Production-ready stealth pipeline with standard SLA routing.</p>
+                <div>
+                    <h3>Developer Pro</h3>
+                    <div class="price-tag">$10</div>
+                    <div class="credits-val">55,000 API Credits</div>
+                    <p style="color: var(--text-dim); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.5rem;">Production-ready stealth pipeline with standard SLA routing.</p>
+                </div>
                 <button class="btn-buy" onclick="initiateCheckout(10)">Deploy Tier</button>
             </div>
 
             <!-- $29 Tier -->
             <div class="card">
-                <h3>Agency Scale</h3>
-                <div class="price-tag">$29</div>
-                <div class="credits-val">100,000 API Credits</div>
-                <p style="color: var(--text-dim); font-size: 0.9rem; margin-bottom: 1.5rem;">High-throughput capacity designed for enterprise scraping workloads.</p>
+                <div>
+                    <h3>Agency Scale</h3>
+                    <div class="price-tag">$29</div>
+                    <div class="credits-val">100,000 API Credits</div>
+                    <p style="color: var(--text-dim); font-size: 0.88rem; line-height: 1.5; margin-bottom: 1.5rem;">High-throughput capacity designed for enterprise scraping workloads.</p>
+                </div>
                 <button class="btn-buy" onclick="initiateCheckout(29)">Deploy Tier</button>
             </div>
         </div>
@@ -221,91 +256,114 @@ async def serve_landing_page():
     </div>
 
 <script>
-    (function initFuturisticGlobe() {
+    // Live UTC Timezone Clock Engine
+    function updateUTCClock() {
+        const now = new Date();
+        const year = now.getUTCFullYear();
+        const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(now.getUTCDate()).padStart(2, '0');
+        const hours = String(now.getUTCHours()).padStart(2, '0');
+        const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(now.getUTCSeconds()).padStart(2, '0');
+        document.getElementById('utcClock').innerText = `${year}-${month}-${day} ${hours}:${minutes}:${seconds} UTC`;
+    }
+    setInterval(updateUTCClock, 1000);
+    updateUTCClock();
+
+    // High-Precision Photorealistic Photons Globe Renderer
+    (function initTrueEarthGlobe() {
         const canvas = document.getElementById('bg-globe');
-        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        
+        let width, height, radius, rotation = 0;
+        
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            radius = Math.min(width, height) * 0.38;
+        }
+        window.addEventListener('resize', resize);
+        resize();
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 220;
+        // High-Density World Map Coordinate Vertices (Lat/Long Data Points)
+        const landPoints = [];
+        const continents = [
+            // North America
+            { lat: [25, 70], lon: [-160, -60], density: 420 },
+            // South America
+            { lat: [-55, 12], lon: [-80, -35], density: 320 },
+            // Europe
+            { lat: [35, 70], lon: [-10, 40], density: 380 },
+            // Africa
+            { lat: [-35, 37], lon: [-18, 50], density: 450 },
+            // Asia & Middle East
+            { lat: [10, 75], lon: [40, 180], density: 680 },
+            // Australia
+            { lat: [-42, -10], lon: [110, 155], density: 250 }
+        ];
 
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        continents.forEach(c => {
+            for (let i = 0; i < c.density; i++) {
+                const lat = c.lat[0] + Math.random() * (c.lat[1] - c.lat[0]);
+                const lon = c.lon[0] + Math.random() * (c.lon[1] - c.lon[0]);
+                landPoints.push({
+                    phi: (90 - lat) * (Math.PI / 180),
+                    theta: (lon + 180) * (Math.PI / 180)
+                });
+            }
+        });
 
-        const particleCount = 2800;
-        const geometry = new THREE.BufferGeometry();
-        const positions = new Float32Array(particleCount * 3);
-        const radius = 95;
-
-        for (let i = 0; i < particleCount; i++) {
-            const phi = Math.acos(-1 + (2 * i) / particleCount);
-            const theta = Math.sqrt(particleCount * Math.PI) * phi;
-
-            positions[i * 3] = radius * Math.cos(theta) * Math.sin(phi);
-            positions[i * 3 + 1] = radius * Math.sin(theta) * Math.sin(phi);
-            positions[i * 3 + 2] = radius * Math.cos(phi);
+        // Add 1200 Global Grid Fillers
+        for (let i = 0; i < 1200; i++) {
+            landPoints.push({
+                phi: Math.acos(2 * Math.random() - 1),
+                theta: 2 * Math.PI * Math.random()
+            });
         }
 
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+            
+            const cx = width / 2;
+            const cy = height / 2;
+            rotation += 0.003;
 
-        const material = new THREE.PointsMaterial({
-            color: 0x6366f1,
-            size: 1.25,
-            transparent: true,
-            opacity: 0.85
-        });
+            // Draw Outer Atmospheric Glow
+            const glowGradient = ctx.createRadialGradient(cx, cy, radius * 0.85, cx, cy, radius * 1.15);
+            glowGradient.addColorStop(0, 'rgba(99, 102, 241, 0.15)');
+            glowGradient.addColorStop(0.5, 'rgba(99, 102, 241, 0.05)');
+            glowGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            
+            ctx.fillStyle = glowGradient;
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 1.2, 0, Math.PI * 2);
+            ctx.fill();
 
-        const globeParticles = new THREE.Points(geometry, material);
-        scene.add(globeParticles);
+            // Render Rotating Sphere Coordinates
+            for (let i = 0; i < landPoints.length; i++) {
+                const pt = landPoints[i];
+                const currentTheta = pt.theta + rotation;
 
-        const wireframeGeo = new THREE.IcosahedronGeometry(94, 3);
-        const wireframeMat = new THREE.MeshBasicMaterial({
-            color: 0x4f46e5,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.15
-        });
-        const wireframeMesh = new THREE.Mesh(wireframeGeo, wireframeMat);
-        scene.add(wireframeMesh);
+                const x = radius * Math.sin(pt.phi) * Math.cos(currentTheta);
+                const y = radius * Math.cos(pt.phi);
+                const z = radius * Math.sin(pt.phi) * Math.sin(currentTheta);
 
-        const ringGeo = new THREE.RingGeometry(115, 116, 64);
-        const ringMat = new THREE.MeshBasicMaterial({
-            color: 0x818cf8,
-            side: THREE.DoubleSide,
-            transparent: true,
-            opacity: 0.3
-        });
-        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-        ringMesh.rotation.x = Math.PI / 3;
-        scene.add(ringMesh);
+                // Render front hemisphere only (3D depth culling)
+                if (z > 0) {
+                    const alpha = Math.min(1, (z / radius) * 1.2);
+                    const size = 1.2 + (z / radius) * 1.1;
 
-        let mouseX = 0, mouseY = 0;
-        window.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX - window.innerWidth / 2) * 0.0003;
-            mouseY = (e.clientY - window.innerHeight / 2) * 0.0003;
-        });
+                    ctx.fillStyle = `rgba(129, 140, 248, ${alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(cx + x, cy + y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
 
-        function animate() {
-            requestAnimationFrame(animate);
-
-            globeParticles.rotation.y += 0.0015;
-            wireframeMesh.rotation.y += 0.0015;
-            ringMesh.rotation.z -= 0.0005;
-
-            globeParticles.rotation.x += (mouseY - globeParticles.rotation.x) * 0.05;
-            globeParticles.rotation.y += (mouseX - globeParticles.rotation.y) * 0.05;
-
-            renderer.render(scene, camera);
+            requestAnimationFrame(render);
         }
 
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
+        render();
     })();
 
     async function initiateCheckout(amount) {
@@ -324,16 +382,14 @@ async def serve_landing_page():
         }
     }
 </script>
-
 </body>
-</html>
+<html>
 """
-    
 
+@app.get("/", response_class=HTMLResponse)
 async def serve_landing_page():
-    return """
-    <!DOCTYPE html>
-    <html lang="en">
+    return HTML_CONTENT
+    
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
