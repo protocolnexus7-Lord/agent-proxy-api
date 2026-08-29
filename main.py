@@ -332,13 +332,13 @@ HTML_CONTENT = """<!DOCTYPE html>
     setInterval(updateUTCClock, 1000);
     updateUTCClock();
 
-        // Photorealistic Satellite Earth Globe Engine
+            // High-Opacity Nightview Earth Globe with Glowing City Lights
     (function init3DRealWorldGlobe() {
         const container = document.getElementById('bg-globe');
         const scene = new THREE.Scene();
         
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 220;
+        camera.position.z = 210;
 
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -348,55 +348,52 @@ HTML_CONTENT = """<!DOCTYPE html>
         const globeGroup = new THREE.Group();
         scene.add(globeGroup);
 
-        // Lighting for Satellite Detail
-        const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
-        scene.add(ambientLight);
-
-        const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.5);
-        dirLight.position.set(5, 3, 5);
-        scene.add(dirLight);
-
-        // Load Real High-Res Satellite Texture Map
         const textureLoader = new THREE.TextureLoader();
         textureLoader.crossOrigin = "anonymous";
         
-        const earthMapUrl = "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg";
+        // High-Resolution NASA Night Lights Earth Texture
+        const nightEarthUrl = "https://threejs.org/examples/textures/planets/earth_lights_2048.png";
 
-        textureLoader.load(earthMapUrl, (texture) => {
-            // Satellite Sphere Layer
+        textureLoader.load(nightEarthUrl, (nightTexture) => {
+            // Main Earth Sphere with High Opacity
             const sphereGeo = new THREE.SphereGeometry(65, 64, 64);
-            const sphereMat = new THREE.MeshStandardMaterial({
-                map: texture,
+            const sphereMat = new THREE.MeshBasicMaterial({
+                map: nightTexture,
                 transparent: true,
-                opacity: 0.35, // Adjust opacity here (0.1 = subtle, 0.5 = vivid)
-                roughness: 0.6,
-                metalness: 0.1
+                opacity: 0.85, // Increased opacity for high visibility
+                blending: THREE.AdditiveBlending
             });
-            const satelliteGlobe = new THREE.Mesh(sphereGeo, sphereMat);
-            globeGroup.add(satelliteGlobe);
+            const nightGlobe = new THREE.Mesh(sphereGeo, sphereMat);
+            globeGroup.add(nightGlobe);
 
-            // Subtle Outer Atmosphere Glow Layer
-            const atmosphereGeo = new THREE.SphereGeometry(66.5, 64, 64);
+            // Dark Interior Base to Block Background Passthrough
+            const innerBaseGeo = new THREE.SphereGeometry(64.5, 64, 64);
+            const innerBaseMat = new THREE.MeshBasicMaterial({ color: 0x020408 });
+            const innerBaseMesh = new THREE.Mesh(innerBaseGeo, innerBaseMat);
+            globeGroup.add(innerBaseMesh);
+
+            // Radiant Cyan Atmosphere Glow Ring
+            const atmosphereGeo = new THREE.SphereGeometry(66.8, 64, 64);
             const atmosphereMat = new THREE.MeshBasicMaterial({
                 color: 0x38bdf8,
                 transparent: true,
-                opacity: 0.08,
+                opacity: 0.15,
                 side: THREE.BackSide
             });
             const atmosphereMesh = new THREE.Mesh(atmosphereGeo, atmosphereMat);
             globeGroup.add(atmosphereMesh);
         });
 
-        // Orbital Ring Overlay
+        // Orbital Ring Highlight
         const ringGeo = new THREE.RingGeometry(78, 78.5, 64);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0x6366f1, side: THREE.DoubleSide, transparent: true, opacity: 0.15 });
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x6366f1, side: THREE.DoubleSide, transparent: true, opacity: 0.25 });
         const ringMesh = new THREE.Mesh(ringGeo, ringMat);
         ringMesh.rotation.x = Math.PI / 2.2;
         globeGroup.add(ringMesh);
 
         function animate() {
             requestAnimationFrame(animate);
-            globeGroup.rotation.y += 0.0012;
+            globeGroup.rotation.y += 0.0015;
             globeGroup.rotation.x = 0.1;
             renderer.render(scene, camera);
         }
@@ -408,8 +405,6 @@ HTML_CONTENT = """<!DOCTYPE html>
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
     })();
-
-
 
     // Cryptomus Integration & Legal Check Validation
     async function initiateCheckout(amount, checkboxId) {
