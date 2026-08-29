@@ -800,11 +800,14 @@ def health_check():
             } catch (err) {
                 console.log('Checkout initialisation mode standard redirect.');
             }
-        }
-    </script>
+        }    
+    
+</script>
+
 </body>
 </html>
 """
+    
 
 # --- CRYPTOMUS CONFIG & HELPERS ---
 CRYPTOMUS_MERCHANT_ID = "YOUR_CRYPTOMUS_MERCHANT_ID"
