@@ -192,53 +192,7 @@ async def serve_landing_page():
             <p class="section-subtitle">Select an infrastructure tier tailored to your API execution frequency.</p>
             
             <div class="pricing-grid">
-                <!-- Standard Tier -->
-                <div class="pricing-card">
-                    <div>
-                        <h4>Developer Tier</h4>
-                        <div class="price mono">$299 <span>/mo</span></div>
-                        <ul class="pricing-features mono">
-                            <li>100,000 API Calls / month</li>
-                            <li>Standard TLS Randomization</li>
-                            <li>99.5% Uptime SLA</li>
-                            <li>Community Discord Support</li>
-                        </ul>
-                    </div>
-                    <a href="#checkout" class="btn mono">Deploy Tier</a>
-                </div>
 
-                <!-- Featured Tier -->
-                <div class="pricing-card featured">
-                    <div>
-                        <h4>Professional Tier</h4>
-                        <div class="price mono">$999 <span>/mo</span></div>
-                        <ul class="pricing-features mono">
-                            <li>1,000,000 API Calls / month</li>
-                            <li>Advanced Stealth Routing</li>
-                            <li>99.9% Uptime SLA</li>
-                            <li>Sub-50ms Global Latency</li>
-                            <li>Priority Telegram Support</li>
-                        </ul>
-                    </div>
-                    <a href="#checkout" class="btn btn-primary mono">Deploy Tier</a>
-                </div>
-
-                <!-- Enterprise Tier -->
-                <div class="pricing-card">
-                    <div>
-                        <h4>Enterprise Enclave</h4>
-                        <div class="price mono">Custom</div>
-                        <ul class="pricing-features mono">
-                            <li>Unlimited Execution Nodes</li>
-                            <li>Dedicated IP Infrastructure</li>
-                            <li>Custom TLS Fingerprints</li>
-                            <li>24/7 Dedicated Ops Support</li>
-                            <li>Instant Crypto Settlement</li>
-                        </ul>
-                    </div>
-                    <a href="#checkout" class="btn mono">Contact Ops</a>
-                </div>
-            </div>
 
             <div class="footer mono">
                 <div>&copy; 2026 Nexus Protocol. All infrastructure nodes secure.</div>
@@ -696,119 +650,98 @@ def health_check():
             &copy; 2026 Nexus Protocol Inc. All rights reserved. | Cryptomus Merchant Verification Node Active
         </footer>
     </div>
+<script>
+    (function initFuturisticGlobe() {
+        const canvas = document.getElementById('bg-globe');
+        if (!canvas) return;
 
-    <script>
-       (function initFuturisticGlobe() {
-    const canvas = document.getElementById('bg-globe');
-    if (!canvas) return;
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 220;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 220;
-
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-    const particleCount = 2800;
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-    const radius = 95;
-
-    for (let i = 0; i < particleCount; i++) {
-        const phi = Math.acos(-1 + (2 * i) / particleCount);
-        const theta = Math.sqrt(particleCount * Math.PI) * phi;
-
-        positions[i * 3] = radius * Math.cos(theta) * Math.sin(phi);
-        positions[i * 3 + 1] = radius * Math.sin(theta) * Math.sin(phi);
-        positions[i * 3 + 2] = radius * Math.cos(phi);
-    }
-
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-
-    const material = new THREE.PointsMaterial({
-        color: 0x6366f1,
-        size: 1.25,
-        transparent: true,
-        opacity: 0.85
-    });
-
-    const globeParticles = new THREE.Points(geometry, material);
-    scene.add(globeParticles);
-
-    const wireframeGeo = new THREE.IcosahedronGeometry(94, 3);
-    const wireframeMat = new THREE.MeshBasicMaterial({
-        color: 0x4f46e5,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.15
-    });
-    const wireframeMesh = new THREE.Mesh(wireframeGeo, wireframeMat);
-    scene.add(wireframeMesh);
-
-    const ringGeo = new THREE.RingGeometry(115, 116, 64);
-    const ringMat = new THREE.MeshBasicMaterial({
-        color: 0x818cf8,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.3
-    });
-    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-    ringMesh.rotation.x = Math.PI / 3;
-    scene.add(ringMesh);
-
-    let mouseX = 0, mouseY = 0;
-    window.addEventListener('mousemove', (e) => {
-        mouseX = (e.clientX - window.innerWidth / 2) * 0.0003;
-        mouseY = (e.clientY - window.innerHeight / 2) * 0.0003;
-    });
-
-    function animate() {
-        requestAnimationFrame(animate);
-
-        globeParticles.rotation.y += 0.0015;
-        wireframeMesh.rotation.y += 0.0015;
-        ringMesh.rotation.z -= 0.0005;
-
-        globeParticles.rotation.x += (mouseY - globeParticles.rotation.x) * 0.05;
-        globeParticles.rotation.y += (mouseX - globeParticles.rotation.y) * 0.05;
-
-        renderer.render(scene, camera);
-    }
-
-    animate();
-
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
+        const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-})();
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        async function initiateCheckout(amountVal, planId) {
-            alert('Initializing Cryptomus payment node for $' + amountVal + ' USD...');
-            try {
-                const response = await fetch('/create-checkout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_email: 'user_123@nexus.io', amount: amountVal, plan_id: planId })
-                });
-                const data = await response.json();
-                if (data.checkout_url) {
-                    window.location.href = data.checkout_url;
-                }
-            } catch (err) {
-                console.log('Checkout initialisation mode standard redirect.');
-            }
-        }    
-    
+        const particleCount = 2800;
+        const geometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const radius = 95;
+
+        for (let i = 0; i < particleCount; i++) {
+            const phi = Math.acos(-1 + (2 * i) / particleCount);
+            const theta = Math.sqrt(particleCount * Math.PI) * phi;
+
+            positions[i * 3] = radius * Math.cos(theta) * Math.sin(phi);
+            positions[i * 3 + 1] = radius * Math.sin(theta) * Math.sin(phi);
+            positions[i * 3 + 2] = radius * Math.cos(phi);
+        }
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+        const material = new THREE.PointsMaterial({
+            color: 0x6366f1,
+            size: 1.25,
+            transparent: true,
+            opacity: 0.85
+        });
+
+        const globeParticles = new THREE.Points(geometry, material);
+        scene.add(globeParticles);
+
+        const wireframeGeo = new THREE.IcosahedronGeometry(94, 3);
+        const wireframeMat = new THREE.MeshBasicMaterial({
+            color: 0x4f46e5,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.15
+        });
+        const wireframeMesh = new THREE.Mesh(wireframeGeo, wireframeMat);
+        scene.add(wireframeMesh);
+
+        const ringGeo = new THREE.RingGeometry(115, 116, 64);
+        const ringMat = new THREE.MeshBasicMaterial({
+            color: 0x818cf8,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.3
+        });
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.rotation.x = Math.PI / 3;
+        scene.add(ringMesh);
+
+        let mouseX = 0, mouseY = 0;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.0003;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.0003;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            globeParticles.rotation.y += 0.0015;
+            wireframeMesh.rotation.y += 0.0015;
+            ringMesh.rotation.z -= 0.0005;
+
+            globeParticles.rotation.x += (mouseY - globeParticles.rotation.x) * 0.05;
+            globeParticles.rotation.y += (mouseX - globeParticles.rotation.y) * 0.05;
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    })();
 </script>
-
 </body>
 </html>
 """
-    
-
+   
 # --- CRYPTOMUS CONFIG & HELPERS ---
 CRYPTOMUS_MERCHANT_ID = "YOUR_CRYPTOMUS_MERCHANT_ID"
 CRYPTOMUS_API_KEY = "YOUR_CRYPTOMUS_PAYMENT_API_KEY"
