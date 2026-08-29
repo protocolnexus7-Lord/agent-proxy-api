@@ -332,13 +332,13 @@ HTML_CONTENT = """<!DOCTYPE html>
     setInterval(updateUTCClock, 1000);
     updateUTCClock();
 
-    // Photorealistic Real World Map 3D Globe Engine
+        // Photorealistic Satellite Earth Globe Engine
     (function init3DRealWorldGlobe() {
         const container = document.getElementById('bg-globe');
         const scene = new THREE.Scene();
         
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.z = 210;
+        camera.position.z = 220;
 
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -348,70 +348,56 @@ HTML_CONTENT = """<!DOCTYPE html>
         const globeGroup = new THREE.Group();
         scene.add(globeGroup);
 
-        // Procedural Real World Map Texture Generator
-        const canvas = document.createElement('canvas');
-        canvas.width = 2048;
-        canvas.height = 1024;
-        const ctx = canvas.getContext('2d');
+        // Lighting for Satellite Detail
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+        scene.add(ambientLight);
 
-        // Deep Ocean Base Layer
-        ctx.fillStyle = '#020408';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.5);
+        dirLight.position.set(5, 3, 5);
+        scene.add(dirLight);
 
-        // Render Real World Landmass Cartography
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.src = "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg";
+        // Load Real High-Res Satellite Texture Map
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.crossOrigin = "anonymous";
         
-        img.onload = () => {
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imgData.data;
+        const earthMapUrl = "https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg";
 
-            // Convert Landmass to Ultra-Premium Neon Grid Overlay
-            ctx.fillStyle = '#020408';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        textureLoader.load(earthMapUrl, (texture) => {
+            // Satellite Sphere Layer
+            const sphereGeo = new THREE.SphereGeometry(65, 64, 64);
+            const sphereMat = new THREE.MeshStandardMaterial({
+                map: texture,
+                transparent: true,
+                opacity: 0.35, // Adjust opacity here (0.1 = subtle, 0.5 = vivid)
+                roughness: 0.6,
+                metalness: 0.1
+            });
+            const satelliteGlobe = new THREE.Mesh(sphereGeo, sphereMat);
+            globeGroup.add(satelliteGlobe);
 
-            const dots = [];
-            const step = 8;
-            for (let y = 0; y < canvas.height; y += step) {
-                for (let x = 0; x < canvas.width; x += step) {
-                    const index = (y * canvas.width + x) * 4;
-                    const brightness = (data[index] + data[index + 1] + data[index + 2]) / 3;
-                    if (brightness > 35) { // Land detection threshold
-                        ctx.fillStyle = '#6366f1';
-                        ctx.beginPath();
-                        ctx.arc(x, y, 1.8, 0, Math.PI * 2);
-                        ctx.fill();
-                    }
-                }
-            }
+            // Subtle Outer Atmosphere Glow Layer
+            const atmosphereGeo = new THREE.SphereGeometry(66.5, 64, 64);
+            const atmosphereMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.08,
+                side: THREE.BackSide
+            });
+            const atmosphereMesh = new THREE.Mesh(atmosphereGeo, atmosphereMat);
+            globeGroup.add(atmosphereMesh);
+        });
 
-            // Create Globe Texture Mesh
-            const texture = new THREE.CanvasTexture(canvas);
-            const sphereGeo = new THREE.SphereGeometry(60, 64, 64);
-            const sphereMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, opacity: 0.95 });
-            const realWorldGlobe = new THREE.Mesh(sphereGeo, sphereMat);
-            globeGroup.add(realWorldGlobe);
-        };
-
-        // Fallback Base Sphere Grid (Immediate Rendering)
-        const innerGeo = new THREE.SphereGeometry(59.5, 36, 36);
-        const innerMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true, transparent: true, opacity: 0.08 });
-        const innerMesh = new THREE.Mesh(innerGeo, innerMat);
-        globeGroup.add(innerMesh);
-
-        // Outer Atmosphere Glow Halo Ring
-        const ringGeo = new THREE.RingGeometry(72, 72.5, 64);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0x6366f1, side: THREE.DoubleSide, transparent: true, opacity: 0.25 });
+        // Orbital Ring Overlay
+        const ringGeo = new THREE.RingGeometry(78, 78.5, 64);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x6366f1, side: THREE.DoubleSide, transparent: true, opacity: 0.15 });
         const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-        ringMesh.rotation.x = Math.PI / 2.3;
+        ringMesh.rotation.x = Math.PI / 2.2;
         globeGroup.add(ringMesh);
 
         function animate() {
             requestAnimationFrame(animate);
-            globeGroup.rotation.y += 0.0018;
-            globeGroup.rotation.x = 0.12;
+            globeGroup.rotation.y += 0.0012;
+            globeGroup.rotation.x = 0.1;
             renderer.render(scene, camera);
         }
         animate();
@@ -422,6 +408,8 @@ HTML_CONTENT = """<!DOCTYPE html>
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
     })();
+
+
 
     // Cryptomus Integration & Legal Check Validation
     async function initiateCheckout(amount, checkboxId) {
